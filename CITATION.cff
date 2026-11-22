@@ -3,7 +3,7 @@ message: "If you use this software, please cite it using the metadata below."
 title: "Donghyuns (동현스): a single-player pencil-sketch vertical shooter laboratory in the manner of Strikers 1945 II, with the number of lives and bombs, the starting stage and the paper colour set through the esoteric language Donghyun-lang"
 type: software
 doi: "10.5281/zenodo.24435598"
-version: "0.02"
+version: "0.03"
 date-released: "2026-11-22"
 authors:
   - family-names: Kim
@@ -26,10 +26,10 @@ abstract: >-
   written in the esoteric programming language Donghyun-lang. Input is
   keyboard, touch and gamepad, with fullscreen; the game is saved in three
   browser slots and can be exported to and imported from a .dhsave file
-  that includes every enemy, bullet and the random-number state. There are
-  no image files: every aircraft, enemy, boss, terrain and the paper grain
-  is drawn by code as wobbly graphite strokes when the page opens, in
-  greyscale on paper. No graphics, sound, text, stage layout, bullet data
+  that includes every enemy, bullet and the random-number state. The only
+  image file is the hand-lettered title on the start screen: every
+  aircraft, enemy, boss, terrain and the paper grain is drawn by code as
+  wobbly graphite strokes when the page opens, in greyscale on paper. No graphics, sound, text, stage layout, bullet data
   or code of the original game is used or extracted; all numbers are the
   author's own. The MIT license applies to the Donghyuns code and
   documentation; the page fonts are under the SIL Open Font License. See
