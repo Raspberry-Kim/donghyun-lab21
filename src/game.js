@@ -230,6 +230,14 @@
       const n = 2 + L;
       for (let i = 0; i < n; i++) { const k = i - (n - 1) / 2; ang(0, 1.15, 'ps_a', k * 3.3, Math.abs(k) * 1.6); }
       if (L >= 1 && p.subCd <= 0) { p.subCd = 36; [-1, 1].forEach(s => this.shot(x + s * 9, y + 8, 0, -2, 3.4 + L * 0.9, 'ps_m', { kind: 'ms', hw: 3 })); }
+    } else if (id === 'shinden') {      // 기수의 기총 넷: 가장 좁게 모아 쏜다
+      if (L < 2) { ang(0, 1.05, 'ps_a', -1.9); ang(0, 1.05, 'ps_a', 1.9); } else { this.shot(x - 2.3, y, 0, -V, 1.45, 'ps_w', { hw: 5 }); this.shot(x + 2.3, y, 0, -V, 1.45, 'ps_w', { hw: 5 }); }
+      if (L >= 1) { const d = L >= 2 ? 0.9 : 0.75; ang(0, d, 'ps_a', -6.2, 4); ang(0, d, 'ps_a', 6.2, 4); }
+      if (L >= 3) { ang(0, 0.75, 'ps_a', -9.8, 8); ang(0, 0.75, 'ps_a', 9.8, 8); }
+      if (L >= 1 && p.subCd <= 0) {      // 달라붙는 탄: 맞은 적에 붙어 한동안 피해를 준다
+        p.subCd = 48;
+        (L >= 3 ? [-7, 7] : [p.subSide = -(p.subSide || 1)].map(s => s * 7)).forEach(ox => this.shot(x + ox, y + 8, 0, -2.6, 1, 'ps_h', { kind: 'st', hw: 3, hh: 5, tick: L >= 2 ? 0.75 : 0.6 }));
+      }
     } else {
       const fan = L >= 3 ? [0, 0.13, -0.13, 0.27, -0.27, 0.42, -0.42] : L >= 2 ? [0, 0.14, -0.14, 0.3, -0.3] : [0, 0.16, -0.16];
       fan.forEach(a => ang(a, 0.95));
@@ -246,6 +254,9 @@
       for (let i = 0; i < n; i++) { const a = (i / (n - 1) - 0.5) * (0.5 + lv * 0.22); this.shot(p.x + a * 16, p.y - 6, Math.sin(a) * 2.2, -Math.cos(a) * 2.2, 13, 'ps_r', { kind: 'rk', hw: 5, hh: 10, acc: 1.07 }); }
     } else if (id === 'hayate') {
       this.beam = { t: 0, life: [34, 58, 88][lv - 1], hw: [8, 10, 12][lv - 1], lv: lv };
+    } else if (id === 'shinden') {      // 큰 밑그림 한 장이 앞으로 나아가며 지나는 적을 긋는다
+      const k = lv - 1;
+      this.shot(p.x, p.y - 8, 0, -1.2, [3.2, 4.2, 5.2][k], 'shin_g', { kind: 'gh', lv: lv, sc: [0.7, 0.95, 1.3][k], hw: [18, 25, 34][k], hh: [16, 22, 30][k], rot: 0 });
     } else {
       const n = lv + 1;
       for (let i = 0; i < n; i++) this.shot(p.x, p.y, 0, 0, 4, 'disc', { kind: 'disc', ang: i / n * 2 * PI, rad: 8, life: [70, 96, 124][lv - 1], hw: 11, hh: 11 });
@@ -286,6 +297,14 @@
         if (w.y > -20 && w.y < H && t % 4 === 0) { this.shot(w.x - 3, w.y - 10, 0, -9, 1.7, 'ps_a'); this.shot(w.x + 3, w.y - 10, 0, -9, 1.7, 'ps_a'); }
       });
       for (let i = this.bullets.length - 1; i >= 0; i--) { const q = this.bullets[i]; if (this.wings.some(w => Math.abs(q.x - w.x) < 26 && Math.abs(q.y - w.y) < 34)) { this.fx.push({ k: 'hit', x: q.x, y: q.y, t: 0, n: 2, rate: 4 }); this.bullets.splice(i, 1); } }
+    } else if (k === 'shinden') {      // 번개 기둥 셋: 가운데는 기체를 따라오고 양옆은 벌어졌다 모인다
+      const d = 22 + 66 * (0.5 - 0.5 * Math.cos(t * 0.09)), top = p.y - 10;
+      this.wings = [0, -d, d].map(o => ({ x: Math.max(8, Math.min(W - 8, p.x + o)), y: top }));
+      const hitX = x0 => this.wings.some(w => Math.abs(x0 - w.x) < 15);
+      this.enemies.forEach(e => { if (!e.dead && e.y > -20 && this.wings.some(w => this.hitBox(e, w.x - 13, 0, w.x + 13, top))) this.hurt(e, 1.8, e.x, Math.min(top, e.y + 8)); });
+      for (let i = this.bullets.length - 1; i >= 0; i--) { const q = this.bullets[i]; if (q.y < top + 6 && hitX(q.x)) { this.fx.push({ k: 'hit', x: q.x, y: q.y, t: 0, n: 2, rate: 4 }); this.bullets.splice(i, 1); } }
+      if (t % 14 === 1) this.shake = Math.max(this.shake, 3);
+      if (this.bombT <= 0) this.wings = [];
     } else {
       if (t % 9 === 0) {
         const row = t / 9, y = H - 30 - row * 20;
@@ -322,6 +341,20 @@
         if (s.y < -20) S.splice(i, 1);
         continue;
       }
+      if (s.kind === 'gh') {      // 밑그림 돌진: 뚫고 지나가며 두 걸음마다 긋는다
+        s.vy = Math.max(-3.4, s.vy * 1.09); s.y += s.vy;
+        if (s.lv >= 2) for (let k = this.bullets.length - 1; k >= 0; k--) { const q = this.bullets[k]; if (Math.abs(q.x - s.x) < s.hw && Math.abs(q.y - s.y) < s.hh) { this.fx.push({ k: 'hit', x: q.x, y: q.y, t: 0, n: 2, rate: 4 }); this.bullets.splice(k, 1); } }
+        if ((s.t & 1) === 0) for (let j = 0; j < E.length; j++) { const e = E[j]; if (!e.dead && e.y > -20 && this.hitBox(e, s.x - s.hw, s.y - s.hh, s.x + s.hw, s.y + s.hh)) this.hurt(e, s.dmg, e.x + (this.rng() - 0.5) * 10, Math.max(s.y - s.hh, Math.min(s.y + s.hh, e.y + 6))); }
+        if (s.y < -s.hh - 20) S.splice(i, 1);
+        continue;
+      }
+      if (s.kind === 'st' && s.stuck) {      // 붙은 탄: 적을 따라다니며 여섯 걸음마다 피해를 준다
+        const e = s.tg;
+        if (!e || e.dead || e.dying || --s.stuck <= 0) { this.fx.push({ k: 'hit', x: s.x, y: s.y, t: 0, n: 2, rate: 4 }); S.splice(i, 1); continue; }
+        s.x = e.x + s.ox; s.y = e.y + s.oy;
+        if (s.stuck % 6 === 0) this.hurt(e, s.tick, s.x, s.y);
+        continue;
+      }
       if (s.kind === 'hm') {
         if (s.t % 6 === 1 || (s.tg && s.tg.dead)) { let best = null, bd = 1e9; for (let j = 0; j < E.length; j++) { const e = E[j]; if (e.dead || e.dying || e.y < 0 || e.y > H) continue; const d = Math.hypot(e.x - s.x, e.y - s.y); if (d < bd) { bd = d; best = e; } } s.tg = best; }
         s.sp = Math.min(7, s.sp * 1.04);
@@ -330,6 +363,7 @@
         ca += Math.max(-0.16, Math.min(0.16, da)); s.vx = Math.cos(ca) * s.sp; s.vy = Math.sin(ca) * s.sp; s.rot = ca + PI / 2;
         if (s.t > 150) { S.splice(i, 1); continue; }
       } else if (s.kind === 'ms') { s.vy = Math.max(-10, s.vy * 1.08); }
+      else if (s.kind === 'st') { s.vy = Math.max(-9.5, s.vy * 1.09); }
       else if (s.kind === 'rk') { s.vx *= s.acc; s.vy *= s.acc; const v = Math.hypot(s.vx, s.vy); if (v > 9) { s.vx *= 9 / v; s.vy *= 9 / v; } }
       s.x += s.vx; s.y += s.vy;
       if (s.y < -16 || s.y > H + 16 || s.x < -16 || s.x > W + 16) { S.splice(i, 1); continue; }
@@ -343,7 +377,8 @@
           if (s.kind !== 'rk' && s.vy < -1 && s.y < edge && s.y - s.vy >= edge - 1) { const k = (edge - s.y) / -s.vy; s.x -= s.vx * k; s.y = edge; touch = true; }
           this.hurt(e, s.dmg, s.x, touch ? s.y - s.hh : s.y - 4);
           if (s.kind === 'rk') { this.boom(s.x, s.y - 6, 'm'); E.forEach(q => { if (q !== e && !q.dead && this.hitBox(q, s.x - 22, s.y - 26, s.x + 22, s.y + 16)) this.hurt(q, 6, q.x, q.y); }); }
-          if (touch) s.hit = 1; else S.splice(i, 1);
+          if (s.kind === 'st' && !e.dead && !e.dying) { s.stuck = 66; s.tg = e; s.ox = s.x - e.x; s.oy = Math.min(s.y - s.hh + 2, e.y + b[1] + b[3] - 1) - e.y; s.vx = s.vy = 0; s.x = e.x + s.ox; s.y = e.y + s.oy; }
+          else if (touch) s.hit = 1; else S.splice(i, 1);
           break;
         }
       }

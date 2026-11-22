@@ -437,11 +437,12 @@ html{touch-action:manipulation}.stage-full,.board-stage,.touchpad,.dpad,.pad-key
 .stage-full.fs.side .board-bottom{padding-top:48px}
 .info-card.grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 10px;align-content:start;min-height:0}.info-card.grid strong{white-space:normal;word-break:keep-all}
 /* 규칙 탭의 기체·단계 표 */
-.plane-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:10px 0 18px}
+.plane-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:10px 0 18px}
 .plane-grid article{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--paper);min-width:0}
 .plane-grid canvas{display:block;margin:0 auto 6px;width:96px;height:96px;background:var(--ds-paper,#eee6d1);border-radius:8px}
 .plane-grid h4{margin:0 0 2px;font-size:var(--text-sm);word-break:keep-all}.plane-grid small{display:block;color:var(--muted);font:var(--text-xs) var(--mono);margin-bottom:6px}
 .plane-grid p{font-size:var(--text-xs);color:var(--muted);margin:0 0 3px;max-width:none}
+@media(max-width:1040px){.plane-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:780px){.plane-grid{grid-template-columns:1fr}.play-grid{grid-template-columns:1fr}}
 @media(max-width:1050px){.play-grid{grid-template-columns:1fr}}
 

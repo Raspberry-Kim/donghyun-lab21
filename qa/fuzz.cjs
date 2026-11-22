@@ -11,7 +11,7 @@ const RUNS = +(process.argv[2] || 18), LIMIT = 60 * 60 * 8;            // 스테
 function rnd(seed) { let s = seed >>> 0; return () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }; }
 const out = [];
 for (let run = 0; run < RUNS; run++) {
-  const r = rnd(run * 7919 + 13), plane = run % 3, diff = ((run / 3) | 0) % 3, lives = 1 + (run % 2), bombs = run % 3 === 0 ? 0 : 1;
+  const r = rnd(run * 7919 + 13), plane = run % DS.PLANES.length, diff = ((run / DS.PLANES.length) | 0) % 3, lives = 1 + (run % 2), bombs = run % 3 === 0 ? 0 : 1;
   const g = new DS.Game({ plane, diff, stage: 0, lives, bombs });
   const inp = { l: 0, r: 0, u: 0, d: 0, ax: 0, ay: 0, tdx: 0, tdy: 0, shot: true, charge: false, shotEdge: false, bombEdge: false };
   let why = '', stageT = 0, idle = 0, lastSt = -1, steps = 0, overs = 0, stages = 0, maxLen = 0;

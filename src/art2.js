@@ -155,6 +155,17 @@
     p.sym([[0, -13.6], [2.4, -9], [2.6, 11], [0, 11.8]], { s: true, tone: 0.14, hatch: SH('r', 0.5, 0.6, 0.9), w: 0.55 });
     p.seg(-2.4, -5.6, 2.4, -5.6, { w: 0.3, a: 0.7, passes: 1 }); p.seg(-2.5, 4, 2.5, 4, { w: 0.3, a: 0.7, passes: 1 });
   }, { grain: 0.3 });
+  def('ps_h', 10, 16, p => {      // 신덴의 달라붙는 탄: 갈고리 달린 짧은 살
+    p.sym([[0, -6.8], [1.5, -3.6], [1.3, 5.6], [0, 6.2]], { s: true, tone: 0.3, w: 0.5 });
+    p.mir(q => { q.seg(1.4, -3, 3.4, -0.6, { w: 0.45, a: 0.85, passes: 1 }); q.seg(1.3, 4, 3.2, 6.6, { w: 0.4, a: 0.7, passes: 1 }); });
+  }, { grain: 0.3 });
+  def('bolt', 26, 48, (p, i) => {      // 신덴 폭탄: 번개 한 토막 (위아래로 이어 붙인다)
+    const r = p.rng, x = [0, 5.4, -3.6, 6.4, -5.8, 2.6, -4.4, 0], pts = x.map((v, k) => [k === 0 || k === 7 ? 0 : v + (r() - 0.5) * 2.4, -23 + k * 46 / 7]);
+    p.line(pts, { w: 1.25, a: 0.95, jit: 0.5, passes: 2 });
+    p.line(pts.map(q => [q[0] + 1.6, q[1]]), { w: 0.45, a: 0.55, jit: 0.8, passes: 1 });
+    p.line([pts[3], [pts[3][0] + 4.4, pts[3][1] + 4.6], [pts[3][0] + 3, pts[3][1] + 9.6]], { w: 0.5, a: 0.7, passes: 1 });
+    p.line([pts[4], [pts[4][0] - 4, pts[4][1] + 5], [pts[4][0] - 3.6, pts[4][1] + 9]], { w: 0.45, a: 0.6, passes: 1 });
+  }, { noFill: true, boil: 3, grain: 0.35 });
   def('disc', 30, 30, p => {
     p.ell(0, 0, 12.6, 12.6, { tone: 0.04, w: 0.7 });
     p.scribble(0, 0, 11, { spiral: true, turns: 3.2, w: 0.45, a: 0.8 });
@@ -241,6 +252,10 @@
   def('prop', 22, 22, (p, i) => {
     p.ell(0, 0, 9.4, 9.4, { paper: false, w: 0.3, a: 0.35, passes: 1, jit: 0.2 });
     for (let k = 0; k < 3; k++) { const a = i * 0.7 + k * 2.094; p.poly([[0, 0], [Math.cos(a - 0.22) * 9, Math.sin(a - 0.22) * 9], [Math.cos(a + 0.22) * 9, Math.sin(a + 0.22) * 9]], { paper: false, tone: 0.2, line: false }); }
+  }, { noFill: true, boil: 3, grain: 0.35 });
+  def('prop6', 22, 22, (p, i) => {      // 신덴의 여섯 날 프로펠러
+    p.ell(0, 0, 9.4, 9.4, { paper: false, w: 0.3, a: 0.35, passes: 1, jit: 0.2 });
+    for (let k = 0; k < 6; k++) { const a = i * 0.35 + k * 1.0472; p.poly([[0, 0], [Math.cos(a - 0.15) * 9, Math.sin(a - 0.15) * 9], [Math.cos(a + 0.15) * 9, Math.sin(a + 0.15) * 9]], { paper: false, tone: 0.2, line: false }); }
   }, { noFill: true, boil: 3, grain: 0.35 });
   def('rotor', 30, 30, (p, i) => {
     p.ell(0, 0, 13.6, 13.6, { paper: false, w: 0.3, a: 0.3, passes: 1, jit: 0.2 });

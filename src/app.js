@@ -11,7 +11,7 @@ const cv = $('#game'), R = new DS.Render(cv), IN = new DS.Input(cv), SFX = DS.Sf
 const canvas = cv;
 const STEP = 1000 / 60, TURN = 44, NUM = n => Number(n).toLocaleString('ko-KR');
 const A = DS.app = { render: R, input: IN,
-  scr: 'load', t: 0, sel: 0, diff: num('diff', 0, 0, 2), plane: num('plane', 0, 0, 2), g: null, live: false, turn: 0, hi: 0, prep: 0, prepFn: null,
+  scr: 'load', t: 0, sel: 0, diff: num('diff', 0, 0, 2), plane: num('plane', 0, 0, DS.PLANES.length - 1), g: null, live: false, turn: 0, hi: 0, prep: 0, prepFn: null,
   auto: Q.get('auto') === '1' || Q.get('auto') === '2', sloppy: Q.get('auto') === '2', god: Q.get('god') === '1', debug: Q.get('debug') === '1', manual: false, loadI: 0, st: { step: 0, draw: 0, fps: 0, n: 0 }
 };
 let tab = 'play', menu = null, last = 0, acc = 0;
@@ -117,7 +117,7 @@ function sortie() {
 }
 
 /* ---------- 준비: 그림을 조금씩 미리 그려 둔다 ---------- */
-const WARM = ['p38', 'hayate', 'pancake', 'eb_s', 'eb_l', 'eb_n', 'ps_a', 'ps_w', 'ps_m', 'ps_r', 'disc', 'beam', 'wing', 'ring', 'swirl', 'it_p', 'it_b', 'it_m', 'ic_bomb', 'hit', 'scorch', 'prop', 'rotor', 'cloud0', 'cloud1', 'cloud2'];
+const WARM = ['p38', 'hayate', 'pancake', 'shinden', 'eb_s', 'eb_l', 'eb_n', 'ps_a', 'ps_w', 'ps_m', 'ps_r', 'ps_h', 'disc', 'beam', 'shin_g', 'wing', 'ring', 'swirl', 'bolt', 'it_p', 'it_b', 'it_m', 'ic_bomb', 'hit', 'scorch', 'prop', 'prop6', 'rotor', 'cloud0', 'cloud1', 'cloud2'];
 ['s', 'm', 'l'].forEach(k => { for (let i = 0; i < DS.BOOM[k]; i++) WARM.push('boom_' + k + i); });
 function warm(then) {
   const t0 = performance.now();
@@ -332,7 +332,7 @@ function pick(n, horiz, rects, twoTap) {   // 돌려주는 값: 정한 번호 �
 }
 const backTap = () => !!inp.tap && inp.tap.x < 64 && inp.tap.y < 26;
 const DIFF_R = [0, 1, 2].map(i => [28, 84 + i * 62, 184, 50]);
-const PLANE_R = [0, 1, 2].map(i => [8 + i * 76, 58, 72, 104]);
+const PLANE_R = DS.PLANES.map((p, i) => [5 + i * 58, 58, 56, 104]);
 const OVER_R = [0, 1].map(i => [50, 150 + i * 30, 140, 24]);
 
 /* ---------- 한 걸음 ---------- */
@@ -343,10 +343,10 @@ function step() {
   if (A.scr === 'prep') { if (++A.prep === 3) { const f = A.prepFn; A.prepFn = null; f(); } }
   else if (A.scr === 'diff') {
     const c = A.auto && A.t > 20 ? A.diff : pick(3, false, DIFF_R);
-    if (c >= 0) { A.diff = c; A.scr = 'plane'; A.sel = A.plane; A.t = 0; status('기체 고르기'); $('#day').textContent = '기체 고르기'; $('#tile-info').textContent = '세 기체 가운데 하나를 고른다.'; $('#hint').innerHTML = '<span><kbd>←</kbd><kbd>→</kbd>고르기</span><span><kbd>X</kbd>정하기</span><span><kbd>Z</kbd>뒤로</span>'; }
+    if (c >= 0) { A.diff = c; A.scr = 'plane'; A.sel = A.plane; A.t = 0; status('기체 고르기'); $('#day').textContent = '기체 고르기'; $('#tile-info').textContent = '네 기체 가운데 하나를 고른다.'; $('#hint').innerHTML = '<span><kbd>←</kbd><kbd>→</kbd>고르기</span><span><kbd>X</kbd>정하기</span><span><kbd>Z</kbd>뒤로</span>'; }
     else if (inp.back || backTap()) backToSetup();
   } else if (A.scr === 'plane') {
-    const c = A.auto && A.t > 20 ? A.plane : pick(3, true, PLANE_R, true);
+    const c = A.auto && A.t > 20 ? A.plane : pick(DS.PLANES.length, true, PLANE_R, true);
     if (c >= 0) { A.plane = c; startGame(); }
     else if (inp.back || backTap()) { A.scr = 'diff'; A.sel = A.diff; A.t = 0; status('난이도 고르기'); $('#day').textContent = '난이도 고르기'; $('#hint').innerHTML = '<span><kbd>↑</kbd><kbd>↓</kbd>고르기</span><span><kbd>X</kbd>정하기</span><span><kbd>Z</kbd>뒤로</span>'; }
   } else if (A.scr === 'game') stepGame();
@@ -398,7 +398,7 @@ function draw() {
   if (A.scr === 'ready') {
     R.draw(null); R.backdrop(t * 0.5, 0.5);
     R.title(W / 2, 69, 160); T(DS.SUBTITLE, W / 2, 120, 14, 'center', 0.9);
-    [1, 0, 2].forEach((pi, i) => plane(pi, 62 + i * 58, 176 + Math.sin(t * 0.05 + i * 2) * 4 + (i === 1 ? -10 : 0), 1, t + i * 3));
+    [1, 0, 3, 2].forEach((pi, i) => plane(pi, 42 + i * 52, 176 + Math.sin(t * 0.05 + i * 2) * 4 + (i === 1 || i === 2 ? -10 : 0), 1, t + i * 3));
     R.box(30, 214, 180, 50, 3, 0.6, 0.55, 0.6);
     T(`생명 ${cfg.lives} · 폭탄 ${cfg.bombs}`, W / 2, 230, 13);
     T(`스테이지 ${cfg.stage} ${stageName(cfg.stage - 1)}부터 · ${paperName(cfg)}`, W / 2, 249, 9.5, 'center', 0.85);

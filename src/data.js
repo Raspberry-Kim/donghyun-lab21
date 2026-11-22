@@ -8,7 +8,8 @@
   DS.PLANES = [
     { id: 'pancake', name: 'XF5U 플라잉 팬케이크', short: 'XF5U', en: 'Vought XF5U Flying Pancake', spr: 'pancake', speed: 2.55, shot: '부채꼴로 넓게', charge: '팽이 원반', bomb: '소용돌이', bars: [3, 2, 3] },
     { id: 'hayate', name: 'Ki-84 하야테', short: 'Ki-84', en: 'Nakajima Ki-84 Hayate', spr: 'hayate', speed: 2.3, shot: '앞으로 곧게 모아서', charge: '굵은 획', bomb: '편대 지원', bars: [2, 3, 1] },
-    { id: 'p38', name: 'P-38 라이트닝', short: 'P-38', en: 'Lockheed P-38 Lightning', spr: 'p38', speed: 2.1, shot: '고르게, 따라가는 로켓', charge: '로켓 다발', bomb: '융단 폭격', bars: [1, 3, 2] }
+    { id: 'p38', name: 'P-38 라이트닝', short: 'P-38', en: 'Lockheed P-38 Lightning', spr: 'p38', speed: 2.1, shot: '고르게, 따라가는 로켓', charge: '로켓 다발', bomb: '융단 폭격', bars: [1, 3, 2] },
+    { id: 'shinden', name: 'J7W 신덴', short: 'J7W', en: 'Kyushu J7W Shinden', spr: 'shinden', speed: 2.45, shot: '좁고 곧게, 달라붙는 탄', charge: '밑그림 돌진', bomb: '번개 기둥', bars: [3, 2, 1] }
   ];
   DS.DIFFS = [
     { id: 'monkey', name: '초급', sub: '탄이 드물고 느리다', bs: 0.6, fr: 2.1, cnt: 0.45, zp: 0.2, hp: 0.9 },

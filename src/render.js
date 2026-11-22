@@ -21,7 +21,7 @@
     Object.keys(need).forEach(n => ART.get(n));
   };
   R.warm = function () {
-    ['p38', 'hayate', 'pancake', 'eb_s', 'eb_l', 'eb_n', 'ps_a', 'ps_w', 'ps_m', 'ps_r', 'disc', 'beam', 'wing', 'ring', 'swirl', 'it_p', 'it_b', 'it_m', 'ic_bomb', 'hit', 'scorch', 'prop', 'rotor', 'cloud0', 'cloud1', 'cloud2'].forEach(n => ART.get(n));
+    ['p38', 'hayate', 'pancake', 'shinden', 'eb_s', 'eb_l', 'eb_n', 'ps_a', 'ps_w', 'ps_m', 'ps_r', 'ps_h', 'disc', 'beam', 'shin_g', 'wing', 'ring', 'swirl', 'bolt', 'it_p', 'it_b', 'it_m', 'ic_bomb', 'hit', 'scorch', 'prop', 'prop6', 'rotor', 'cloud0', 'cloud1', 'cloud2'].forEach(n => ART.get(n));
     ['s', 'm', 'l'].forEach(k => { for (let i = 0; i < DS.BOOM[k]; i++) ART.get('boom_' + k + i); });
   };
 
@@ -39,7 +39,7 @@
     const pr = s.o.props; if (!pr) return;
     const c = this.c, fy = s.o.flipY ? -1 : 1, cr = Math.cos(rot || 0), sr = Math.sin(rot || 0);
     for (let i = 0; i < pr.length; i++) {
-      const q = pr[i], px = q[0] * (sx || 1), py = q[1] * fy, ps = ART.get(q[3] ? 'rotor' : 'prop'), f = ps.frames[((t >> 1) + i) % ps.frames.length], r = q[2] * S;
+      const q = pr[i], px = q[0] * (sx || 1), py = q[1] * fy, ps = ART.get(q[3] === 6 ? 'prop6' : q[3] ? 'rotor' : 'prop'), f = ps.frames[((t >> 1) + i) % ps.frames.length], r = q[2] * S;
       const wx = x + px * cr - py * sr, wy = y + px * sr + py * cr;
       c.drawImage(f, Math.round(wx * S - r), Math.round(wy * S - r), r * 2, r * 2);
     }
@@ -91,7 +91,7 @@
     for (let i = 0; i < E.length; i++) if (!E[i].ground && !E[i].dead) this.enemy(E[i], g);
 
     // 내 탄
-    for (let i = 0; i < g.shots.length; i++) { const s = g.shots[i]; this.spr(s.spr, s.x, s.y, s.rot, 1, 1, (t >> 2) + i); }
+    for (let i = 0; i < g.shots.length; i++) { const s = g.shots[i]; if (s.kind === 'gh') this.spr(s.spr, s.x, s.y, 0, s.sc, s.sc, t >> 2, 0.78); else this.spr(s.spr, s.x, s.y, s.rot, 1, 1, (t >> 2) + i); }
     if (g.beam) {
       const b = g.beam, s = ART.get('beam'), k = b.hw * 2 / 22, fade = Math.min(1, (b.life - b.t) / 8, b.t / 3);
       c.globalAlpha = Math.max(0.15, fade * 0.62);
@@ -100,6 +100,14 @@
     }
     if (g.bombT > 0) {
       if (g.bombK === 'pancake') { const k = g.bombR / 29; this.spr('swirl', g.bx, g.by, t * 0.21, k, k, t >> 2, 0.42); this.spr('ring', g.bx, g.by, -t * 0.1, k * 1.03, k * 1.03, t >> 2, 0.6); }
+      else if (g.bombK === 'shinden') {      // 번개 기둥: 토막을 기체 앞에서 화면 위까지 이어 붙인다
+        const b = ART.get('bolt');
+        g.wings.forEach((w, i) => {
+          for (let y = w.y - 23, n = 0; y > -24; y -= 46, n++) { const f = b.frames[((t >> 1) + i + n) % b.frames.length], fl = (i + n) & 1; c.save(); c.translate(Math.round(w.x * S), Math.round(y * S)); if (fl) c.scale(-1, 1); c.globalAlpha = i === 0 ? 0.95 : 0.82; c.drawImage(f, -b.w * S / 2, -b.h * S / 2); c.restore(); }
+          this.spr('hit', w.x, w.y, t * 0.3 + i, 1.5, 1.5, (t >> 1) + i, 0.9);
+        });
+        c.globalAlpha = 1;
+      }
       else if (g.bombK === 'hayate') g.wings.forEach((w, i) => { const s = this.spr('wing', w.x, w.y, 0, 1, 1, (t >> 3) + i); this.props(s, w.x, w.y, 0, t + i); });
     }
     // 주인공

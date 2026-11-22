@@ -25,15 +25,15 @@ function drive(g, n) {
     g.update(pilot(g));
   }
 }
-let fails = 0, checks = 0, modes = {}, sawBoss = 0, sawTimer = 0, sawPart = 0, sawBomb = 0, sawBeam = 0, sawWing = 0, sawHome = 0;
-for (let plane = 0; plane < 3; plane++) for (let diff = 0; diff < 3; diff++) for (let stage = 0; stage < 5; stage++) {
+let fails = 0, checks = 0, modes = {}, sawBoss = 0, sawTimer = 0, sawPart = 0, sawBomb = 0, sawBeam = 0, sawWing = 0, sawHome = 0, sawStick = 0, sawGhost = 0;
+for (let plane = 0; plane < DS.PLANES.length; plane++) for (let diff = 0; diff < 3; diff++) for (let stage = 0; stage < 5; stage++) {
   const g = new DS.Game({ plane, diff, stage, lives: 9, bombs: 5, power: (plane + stage) % 4 });
   for (let seg = 0; seg < 14; seg++) {
     if (drive(g, 331 + seg * 53) === 'end') break;
     if (['intro', 'play', 'clear'].indexOf(g.mode) < 0) continue;
     const data = g.save(), txt = JSON.stringify(data);
     const g2 = DS.Game.load(JSON.parse(txt), {});
-    modes[g.mode] = (modes[g.mode] || 0) + 1; if (g.boss) sawBoss++; if (g.timers.length) sawTimer++; if (g.enemies.some(e => e.type === 'part')) sawPart++; if (g.bombT > 0) sawBomb++; if (g.beam) sawBeam++; if (g.wings.length) sawWing++; if (g.shots.some(s => s.tg)) sawHome++;
+    modes[g.mode] = (modes[g.mode] || 0) + 1; if (g.boss) sawBoss++; if (g.timers.length) sawTimer++; if (g.enemies.some(e => e.type === 'part')) sawPart++; if (g.bombT > 0) sawBomb++; if (g.beam) sawBeam++; if (g.wings.length) sawWing++; if (g.shots.some(s => s.tg)) sawHome++; if (g.shots.some(s => s.stuck)) sawStick++; if (g.shots.some(s => s.kind === 'gh')) sawGhost++;
     const again = JSON.stringify(g2.save());
     checks++;
     if (again !== txt) { fails++; console.log('저장본이 다르다', plane, diff, stage, seg); const A = JSON.parse(txt), B = JSON.parse(again); for (const k in A) if (JSON.stringify(A[k]) !== JSON.stringify(B[k])) { const x = JSON.stringify(A[k]), y = JSON.stringify(B[k]); let i = 0; while (x[i] === y[i]) i++; console.log('  다른 항목:', k, x.slice(Math.max(0, i - 200), i + 120), '|', y.slice(Math.max(0, i - 60), i + 120)); } continue; }
@@ -56,5 +56,5 @@ const g0 = new DS.Game({ plane: 0, diff: 0 }); for (let i = 0; i < 400; i++) g0.
 const good = g0.save(); let rejected = 0; const bads = [null, {}, Object.assign({}, good, { planeIdx: 7 }), Object.assign({}, good, { stage: 9 }), Object.assign({}, good, { mode: 'over' }), Object.assign({}, good, { enemies: 'x' }), Object.assign({}, good, { pl: null }), Object.assign({}, good, { life0: 0 }), Object.assign({}, good, { rng: 'a' })];
 bads.forEach(b => { try { DS.Game.load(b, {}); } catch (e) { rejected++; } });
 if (rejected !== bads.length) { fails++; console.log('망가진 저장본을 받았다', rejected, bads.length); }
-console.log(JSON.stringify({ checks, fails, modes, sawBoss, sawTimer, sawPart, sawBomb, sawBeam, sawWing, sawHome, rejected, bytes: JSON.stringify(good).length }));
+console.log(JSON.stringify({ checks, fails, modes, sawBoss, sawTimer, sawPart, sawBomb, sawBeam, sawWing, sawHome, sawStick, sawGhost, rejected, bytes: JSON.stringify(good).length }));
 process.exit(fails ? 1 : 0);
