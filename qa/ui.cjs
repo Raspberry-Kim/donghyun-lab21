@@ -7,7 +7,7 @@ const PW = require(process.env.PLAYWRIGHT || '/home/user/node_modules/playwright
   const errs = [], out = []; let fail = 0;
   const ok = (c, m) => { out.push((c ? 'ok   ' : 'FAIL ') + m); if (!c) fail++; };
   p.on('pageerror', e => errs.push('PAGEERR ' + e.message + '\n' + (e.stack || '').split('\n').slice(0, 4).join('\n'))); p.on('console', m => { if (m.type() === 'error') errs.push('CONSOLE ' + m.text()); });
-  await p.goto('http://127.0.0.1:8765/index.html?god=1');
+  await p.goto((process.env.DS_URL || 'http://127.0.0.1:8765/index.html') + '?god=1');
   await p.waitForFunction(() => document.body.classList.contains('ready'), null, { timeout: 60000 });
   const st = () => p.evaluate(() => JSON.parse(window.render_game_to_text()));
   const adv = ms => p.evaluate(m => window.advanceTime(m), ms);

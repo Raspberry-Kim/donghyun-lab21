@@ -6,7 +6,7 @@ const PW = require(process.env.PLAYWRIGHT || '/home/user/node_modules/playwright
   for (const [name, vp, mob] of [['desk', { width: 1280, height: 800 }, false], ['phone', { width: 390, height: 780 }, true], ['land', { width: 780, height: 390 }, true]]) {
     const ctx = await b.newContext({ viewport: vp, ...(mob && eng !== 'firefox' ? { hasTouch: true, isMobile: true } : {}), deviceScaleFactor: mob ? 2 : 1 });
     const p = await ctx.newPage(); p.on('pageerror', e => errs.push(name + ' ' + e.message));
-    await p.goto('http://127.0.0.1:8765/index.html?god=1&diff=1&plane=1'); await p.waitForSelector('body.ready', { timeout: 60000 });
+    await p.goto((process.env.DS_URL || 'http://127.0.0.1:8765/index.html') + '?god=1&diff=1&plane=1'); await p.waitForSelector('body.ready', { timeout: 60000 });
     ok(await p.isDisabled('#full'), name + ': 출전 전에는 전체 화면 버튼이 꺼져 있다');
     await p.click('#run'); await p.waitForTimeout(300);
     await p.evaluate(() => { const d = window.__donghyuns; window.advanceTime(100); });

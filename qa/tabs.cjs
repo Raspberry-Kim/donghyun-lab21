@@ -8,7 +8,7 @@ const pw = require('/home/user/node_modules/playwright');
     const ctx = await b.newContext({ viewport: vp, hasTouch: mob, isMobile: mob && eng !== 'firefox', deviceScaleFactor: mob ? 2 : 1 });
     const p = await ctx.newPage();
     p.on('pageerror', e => errs.push(name + ': ' + e.message)); p.on('console', m => { if (m.type() === 'error') errs.push(name + ': ' + m.text()); });
-    await p.goto('http://127.0.0.1:8765/index.html'); await p.waitForSelector('body.ready', { timeout: 60000 });
+    await p.goto((process.env.DS_URL || 'http://127.0.0.1:8765/index.html') + ''); await p.waitForSelector('body.ready', { timeout: 60000 });
     await p.screenshot({ path: `qa/tmp/tab-${eng}-${name}-top.png` });
     for (const t of ['protocol', 'rules', 'math', 'about']) {
       const btn = p.locator(`.tabs button[data-tab="${t}"]`);
