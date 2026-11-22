@@ -12,4 +12,7 @@ ok(readme.startsWith('# 동현스 v' + ver), 'README 판 번호 v' + ver);
 ok(fs.readFileSync(path.join(root, 'CITATION.cff'), 'utf8').includes('version: "' + ver + '"'), 'CITATION.cff 판 번호');
 ok(fs.readFileSync(path.join(root, 'CHANGELOG.md'), 'utf8').includes('## v' + ver + ' '), 'CHANGELOG 판 번호');
 ok(!/요청\s?반영|사용자 요청/.test(readme + fs.readFileSync(path.join(root, 'CHANGELOG.md'), 'utf8') + h), '금지 표현 없음');
+const credits = fs.readFileSync(path.join(root, 'CREDITS.md'), 'utf8'), cff = fs.readFileSync(path.join(root, 'CITATION.cff'), 'utf8'), log = fs.readFileSync(path.join(root, 'CHANGELOG.md'), 'utf8');
+ok(!/\uBFD0/.test(readme + credits + h + log), '한정 조사(U+BFD0) 없음');
+ok([readme, credits, h].every(t => t.includes('제작자의 아내가 직접 쓴')) && cff.includes("author's wife"), '제목 글씨 표기(README · CREDITS · 모델과 출처 탭 · CITATION)');
 console.log(fail ? fail + ' FAILED' : 'all ok'); process.exit(fail ? 1 : 0);
