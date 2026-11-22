@@ -17,7 +17,7 @@
     if (this.terrain) { this.terrain.width = this.terrain.height = 0; this.terrain = null; }      // 앞 장의 땅 그림은 버린다
     this.terrain = DS.makeTerrain(stage);
     const st = DS.STAGES[stage], need = {};
-    st.events.forEach(e => { if (e.boss) { const b = DS.BOSSES[e.boss]; need[b.spr] = 1; (b.parts || []).forEach(p => need[p.spr] = 1); if (b.dome) need.b_dome = 1; } else { const d = DS.ENEMIES[e.type]; need[d.spr] = 1; if (d.tur) need[d.tur] = 1; } });
+    st.events.forEach(e => { if (e.boss) { const b = DS.BOSSES[e.boss]; need[b.spr] = 1; (b.parts || []).forEach(p => need[p.spr] = 1); if (b.dome) need[b.dome === true ? 'b_dome' : b.dome] = 1; } else { const d = DS.ENEMIES[e.type]; need[d.spr] = 1; if (d.tur) need[d.tur] = 1; } });
     Object.keys(need).forEach(n => ART.get(n));
   };
   R.warm = function () {
@@ -57,8 +57,10 @@
     const im = new Image(); im.onload = function () { R.titleImg = im; done(); }; im.onerror = function () { done(); }; im.src = DS.TITLE_PNG;
   });
   R.title = function (x, y, w) {      // 가운데 (x, y), 너비 w칸
-    const im = this.titleImg; if (!im) { this.text(DS.TITLE, x, y + 4, 56, 'center'); return; }
-    const c = this.c, h = w * im.height / im.width; c.globalAlpha = 0.92;
+    const im = this.titleImg, h = w * (im ? im.height / im.width : 0.45);
+    this.text('TM', x + w / 2 - 5, y - h / 2 + 5, 9, 'right', 0.88);      // 제목 ‘스’의 오른쪽 위에 붙는 작은 위첨자. 게임의 다른 글자와 같은 글꼴로 쓴다
+    if (!im) { this.text(DS.TITLE, x, y + 4, 56, 'center'); return; }
+    const c = this.c; c.globalAlpha = 0.92;
     c.drawImage(im, Math.round((x - w / 2) * S), Math.round((y - h / 2) * S), Math.round(w * S), Math.round(h * S)); c.globalAlpha = 1;
   };
 
@@ -70,7 +72,7 @@
     const s = this.spr(d.spr, x, y, d.rot ? e.rot : 0, 1, 1, fi, al);
     this.props(s, x, y, d.rot ? e.rot : 0, g.t + e.id);
     if (d.tur) this.spr(d.tur, x, y + (d.turY || 0), e.ta + PI / 2, 1, 1, fi, al);
-    if (e.boss && e.bd.dome && e.open) this.spr('b_dome', x, y, 0, 1, 1, fi, al);
+    if (e.boss && e.bd.dome && e.open) this.spr(e.bd.dome === true ? 'b_dome' : e.bd.dome, x, y, 0, 1, 1, fi, al);
   };
 
   R.draw = function (g) {
@@ -200,9 +202,9 @@
     }
     if (g.mode === 'clear' && g.modeT > 40) {
       const a = Math.min(1, (g.modeT - 40) / 20);
-      this.text(g.S.name + ' 넘김', W / 2, 110, 22, 'center', a);
-      if (g.modeT > 80) this.text('남은 기체·폭탄 보너스  ' + g.clearBonus, W / 2, 140, 10, 'center', a);
-      if (g.modeT > 120) this.text('쓰러뜨린 적  ' + g.kills + ' / ' + g.spawned, W / 2, 156, 10, 'center', a);
+      this.text('스테이지 ' + (g.stage + 1) + ' 클리어', W / 2, 104, 24, 'center', a); this.text(g.S.name, W / 2, 126, 13, 'center', a * 0.9);
+      if (g.modeT > 80) this.text('남은 기체·폭탄 보너스  ' + g.clearBonus, W / 2, 148, 10, 'center', a);
+      if (g.modeT > 120) this.text('쓰러뜨린 적  ' + g.kills + ' / ' + g.spawned, W / 2, 164, 10, 'center', a);
     }
   };
 
