@@ -166,7 +166,8 @@
     if (p.dead > 0 || !p.ctrl) { inp.tdx = 0; inp.tdy = 0; }
     if (p.dead > 0) {
       if (--p.dead === 0) {
-        if (this.lives > 0) { this.lives--; this.respawn(); }
+        if (this.mode === 'clear') this.respawn();      // 보스가 먼저 쓰러졌으면 기체를 잃지 않는다 (게임 오버 뒤에 빈 스테이지에 갇히던 일을 막는다)
+        else if (this.lives > 0) { this.lives--; this.respawn(); }
         else { this.mode = 'over'; this.modeT = 0; }
       }
       return;
@@ -300,15 +301,18 @@
   };
 
   /* ── 내 탄 ── */
-  G.hitBox = function (e, x0, y0, x1, y1) {
+  G.hitBoxAt = function (e, x0, y0, x1, y1) {      // 닿은 상자를 돌려준다 (없으면 null)
     const bx = e.boxes;
-    for (let i = 0; i < bx.length; i++) { const b = bx[i]; if (x1 > e.x + b[0] - b[2] && x0 < e.x + b[0] + b[2] && y1 > e.y + b[1] - b[3] && y0 < e.y + b[1] + b[3]) return true; }
-    return false;
+    for (let i = 0; i < bx.length; i++) { const b = bx[i]; if (x1 > e.x + b[0] - b[2] && x0 < e.x + b[0] + b[2] && y1 > e.y + b[1] - b[3] && y0 < e.y + b[1] + b[3]) return b; }
+    return null;
   };
+  G.hitBox = function (e, x0, y0, x1, y1) { return !!this.hitBoxAt(e, x0, y0, x1, y1); };
   G.updShots = function () {
     const S = this.shots, E = this.enemies, p = this.pl;
     for (let i = S.length - 1; i >= 0; i--) {
-      const s = S[i]; s.t++;
+      const s = S[i];
+      if (s.hit) { S.splice(i, 1); continue; }      // 맞은 자리에서 한 걸음 보인 탄을 지운다
+      s.t++;
       if (s.kind === 'disc') {
         if (s.t < s.life) { s.ang += 0.13; s.rad = Math.min(50, s.rad + 0.55); s.x = p.x + Math.cos(s.ang) * s.rad; s.y = p.y + Math.sin(s.ang) * s.rad; }
         else { s.y -= 6.5; }
@@ -332,10 +336,15 @@
       for (let j = 0; j < E.length; j++) {
         const e = E[j];
         if (e.dead || e.y < -30) continue;
-        if (this.hitBox(e, s.x - s.hw, s.y - s.hh, s.x + s.hw, s.y + s.hh)) {
-          this.hurt(e, s.dmg, s.x, s.y - 4);
+        const b = this.hitBoxAt(e, s.x - s.hw, s.y - s.hh, s.x + s.hw, s.y + s.hh);
+        if (b) {
+          // 위로 가던 탄이 상자 아랫변을 넘었으면 닿은 자리로 되돌려 한 걸음 더 그린다 (닿기 전에 사라져 보이지 않게)
+          const edge = e.y + b[1] + b[3] + s.hh; let touch = false;
+          if (s.kind !== 'rk' && s.vy < -1 && s.y < edge && s.y - s.vy >= edge - 1) { const k = (edge - s.y) / -s.vy; s.x -= s.vx * k; s.y = edge; touch = true; }
+          this.hurt(e, s.dmg, s.x, touch ? s.y - s.hh : s.y - 4);
           if (s.kind === 'rk') { this.boom(s.x, s.y - 6, 'm'); E.forEach(q => { if (q !== e && !q.dead && this.hitBox(q, s.x - 22, s.y - 26, s.x + 22, s.y + 16)) this.hurt(q, 6, q.x, q.y); }); }
-          S.splice(i, 1); break;
+          if (touch) s.hit = 1; else S.splice(i, 1);
+          break;
         }
       }
     }

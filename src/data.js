@@ -55,18 +55,19 @@
     rain(g, n, sp, bt) { n = P.cnt(g, n); for (let i = 0; i < n; i++) g.bullet(16 + g.rng() * (W - 32), -6, PI / 2 + (g.rng() - 0.5) * 0.2, sp * (0.85 + 0.3 * g.rng()), bt); }
   };
   const D90 = PI / 2;
+  const BOTH = (...b) => b.reduce((a, q) => a.concat([[-q[0], q[1], q[2], q[3]], q]), []);      // 왼쪽·오른쪽에 같은 상자
 
-  /* ── 보스 ──  boxes: [dx, dy, 반너비, 반높이]  parts: 부술 수 있는 포탑 */
+  /* ── 보스 ──  boxes: [dx, dy, 반너비, 반높이] (그림 가운데가 원점, 그림 밖으로 나가지 않게 — qa/hitbox.cjs가 견준다)  parts: 부술 수 있는 포탑 */
   DS.BOSSES = {
     s1mid: { name: '큰 비행정', spr: 'b_boat', hp: 460, sc: 8000, ty: 74, sway: [58, 0.011, 8], leave: 'up', timeout: 1900,
-      boxes: [[0, 0, 8, 38], [0, 1, 60, 8]],
+      boxes: [[0, -3, 6, 35], [0, 35, 4, 4], [0, 2, 60, 5], [0, 4, 34, 8], [0, -34, 18, 3]],      // 동체 · 기수 · 날개 · 날개 안쪽 · 꼬리 날개
       parts: [{ x: 0, y: 14, spr: 'bt_s', hp: 40, fire: { k: 'aim', at: 80, every: 80, n: 3, spr: 0.44, sp: 1.9 } }, { x: 0, y: -12, spr: 'bt_s', hp: 40, fire: { k: 'aim', at: 130, every: 100, n: 1, sp: 2.2, rep: 3, gap: 8, bt: 'n' } }],
       phases: [
         { until: 0.5, acts: [{ every: 150, at: 110, fn: (e, g) => [-31, -15, 15, 31].forEach(x => g.bullet(e.x + x, e.y + 16, D90, 1.5, 's')) }] },
         { until: 0, acts: [{ every: 120, at: 30, fn: (e, g) => P.ring(g, e.x, e.y + 34, 12, 1.4, 'l', g.rng() * 6) }, { every: 150, at: 90, fn: (e, g) => [-31, -15, 15, 31].forEach(x => g.bullet(e.x + x, e.y + 16, D90, 1.6, 's')) }] }
       ] },
     s1boss: { name: '전함', spr: 'b_ship', hp: 1500, sc: 30000, ground: true, ty: 46, sway: [22, 0.007, 16],
-      boxes: [[0, 30, 18, 140]],
+      boxes: [[0, -10, 24, 70], [0, -98, 16, 18], [0, 67, 20, 7], [0, 81, 16, 7], [0, 94, 12, 6], [0, 105, 8, 5], [0, 115, 3, 5]],      // 선체 · 고물 · 뱃머리로 갈수록 좁아지는 다섯 단 (그림의 윤곽을 따른다)
       parts: [{ x: 0, y: 70, spr: 'bt_l', hp: 100, fire: { k: 'aim', at: 100, every: 120, n: 3, spr: 0.5, sp: 1.7, bt: 'l' } }, { x: 0, y: 42, spr: 'bt_l', hp: 100, fire: { k: 'aim', at: 160, every: 120, n: 5, spr: 0.9, sp: 1.5 } },
         { x: -18, y: 15, spr: 'bt_s', hp: 45, fire: { k: 'aim', at: 130, every: 105, n: 1, sp: 2.2, rep: 2, gap: 9, bt: 'n' } }, { x: 18, y: 15, spr: 'bt_s', hp: 45, fire: { k: 'aim', at: 180, every: 105, n: 1, sp: 2.2, rep: 2, gap: 9, bt: 'n' } }],
       phases: [
@@ -75,12 +76,12 @@
         { until: 0, acts: [{ every: 100, at: 30, fn: (e, g) => P.ring(g, e.x, e.y + 8, 14, 1.5, 's', (e.k = (e.k || 0) + 0.2)) }, { every: 150, at: 80, fn: (e, g) => P.burst(g, e, 0, 150, 3, 12, 3, 0.5, 2.0, 's') }] }
       ] },
     s2mid: { name: '장갑 열차', spr: 'b_train', hp: 480, sc: 9000, ground: true, ty: 96, sway: [0, 0.012, 44], x: 120, leave: 'down', timeout: 1900,
-      boxes: [[0, 0, 12, 84]],
+      boxes: [[0, -22, 13, 56], [0, 58, 11, 22], [0, 81, 8, 2]],      // 화차 셋 · 기관차 · 기관차 앞
       parts: [{ x: 0, y: -62, spr: 'bt_s', hp: 45, fire: { k: 'aim', at: 90, every: 95, n: 2, spr: 0.24, sp: 1.9 } }, { x: 0, y: -22, spr: 'bt_s', hp: 45, fire: { k: 'aim', at: 130, every: 95, n: 3, spr: 0.5, sp: 1.7 } }, { x: 0, y: 18, spr: 'bt_s', hp: 45, fire: { k: 'aim', at: 170, every: 95, n: 1, sp: 2.2, rep: 3, gap: 8, bt: 'n' } }],
       phases: [{ until: 0.5, acts: [{ every: 170, at: 120, fn: (e, g) => P.ring(g, e.x, e.y + 74, 10, 1.3, 'l', 0.3) }] },
         { until: 0, acts: [{ every: 120, at: 30, fn: (e, g) => P.ring(g, e.x, e.y + 74, 12, 1.4, 'l', g.rng() * 6) }, { every: 160, at: 100, fn: (e, g) => P.fan(g, e.x, e.y + 74, D90, 5, 1.0, 1.9, 'n') }] }] },
     s2boss: { name: '육상 전함', spr: 'b_tank', hp: 1800, sc: 40000, ground: true, ty: 70, sway: [30, 0.008, 10],
-      boxes: [[0, 0, 58, 56]],
+      boxes: [[0, 1, 72, 59]],      // 무한궤도까지
       parts: [{ x: 0, y: 6, spr: 'bt_l', hp: 140, fire: { k: 'aim', at: 100, every: 125, n: 3, spr: 0.3, sp: 2.0, bt: 'l' } }, { x: -48, y: 20, spr: 'bt_s', hp: 55, fire: { k: 'aim', at: 140, every: 105, n: 2, spr: 0.2, sp: 1.9 } }, { x: 48, y: 20, spr: 'bt_s', hp: 55, fire: { k: 'aim', at: 190, every: 105, n: 2, spr: 0.2, sp: 1.9 } },
         { x: -30, y: -18, spr: 'gun_t', hp: 45, fire: { k: 'fan', at: 120, every: 140, n: 3, spr: 0.7, sp: 1.6 } }, { x: 30, y: -18, spr: 'gun_t', hp: 45, fire: { k: 'fan', at: 190, every: 140, n: 3, spr: 0.7, sp: 1.6 } }],
       phases: [
@@ -89,12 +90,12 @@
         { until: 0, acts: [{ every: 90, at: 30, fn: (e, g) => P.burst(g, e, 0, 56, 2, 12, 3, 0.5, 2.0, 's') }, { every: 150, at: 70, fn: (e, g) => P.ring(g, e.x, e.y + 6, 18, 1.4, 'l', g.rng() * 6) }, { every: 230, at: 150, fn: (e, g) => P.rain(g, 7, 1.6, 's') }] }
       ] },
     s3mid: { name: '큰 폭격기', spr: 'b_bomber', hp: 560, sc: 10000, ty: 66, sway: [18, 0.012, 7], leave: 'up', timeout: 2000,
-      boxes: [[0, 0, 7, 40], [0, 1, 96, 8]],
+      boxes: [[0, -1, 6, 37], [0, 39, 3, 3], [0, 0, 96, 4], [0, 3, 70, 6], [0, -34, 22, 3]],      // 동체 · 기수 · 날개 · 날개 안쪽 · 꼬리 날개
       parts: [{ x: 0, y: 10, spr: 'bt_s', hp: 50, fire: { k: 'aim', at: 90, every: 90, n: 3, spr: 0.5, sp: 1.9 } }, { x: -42, y: 2, spr: 'bt_s', hp: 45, fire: { k: 'aim', at: 130, every: 110, n: 1, sp: 2.2, rep: 2, gap: 9, bt: 'n' } }, { x: 42, y: 2, spr: 'bt_s', hp: 45, fire: { k: 'aim', at: 180, every: 110, n: 1, sp: 2.2, rep: 2, gap: 9, bt: 'n' } }],
       phases: [{ until: 0.5, acts: [{ every: 160, at: 110, fn: (e, g) => [-67, -43, -19, 19, 43, 67].forEach((x, i) => g.later(i * 7, ['bul', x, 18, D90, 1.4, 's'], e)) }] },
         { until: 0, acts: [{ every: 125, at: 30, fn: (e, g) => P.ring(g, e.x, e.y + 36, 14, 1.4, 'l', g.rng() * 6) }, { every: 150, at: 90, fn: (e, g) => [67, 43, 19, -19, -43, -67].forEach((x, i) => g.later(i * 7, ['bul', x, 18, D90, 1.5, 's'], e)) }] }] },
     s3boss: { name: '큰 잠수함', spr: 'b_sub', hp: 2000, sc: 50000, ground: true, ty: 50, sway: [26, 0.008, 14],
-      boxes: [[0, 20, 13, 100]],
+      boxes: [[0, -6, 14, 80], [0, -96, 11, 10], [0, 85, 19, 5], [0, 99, 7, 9], [0, 111, 3, 3]],      // 선체 · 꼬리 · 앞 날개 · 뱃머리 · 뱃머리 끝
       parts: [{ x: 0, y: 30, spr: 'bt_l', hp: 130, fire: { k: 'aim', at: 100, every: 120, n: 3, spr: 0.44, sp: 1.9, bt: 'l' } }, { x: 0, y: -16, spr: 'bt_s', hp: 60, fire: { k: 'aim', at: 150, every: 100, n: 1, sp: 2.2, rep: 3, gap: 8, bt: 'n' } }],
       phases: [
         { until: 0.6, acts: [{ every: 190, at: 130, fn: (e, g) => [0, 1].forEach(i => g.later(i * 16, ['torp', 62 + i * 12, 40, 2.0], e)) }] },
@@ -102,12 +103,12 @@
         { until: 0, acts: [{ every: 170, at: 30, fn: (e, g) => { const a = g.rng() * 6; P.stream(g, e, 0, -10, 16, 5, a, 0.42, 1.5, 's'); P.stream(g, e, 0, -10, 16, 5, a + PI, 0.42, 1.5, 's'); } }, { every: 120, at: 90, fn: (e, g) => [0, 1, 2, 3].forEach(i => g.later(i * 12, ['torp', 62 + i * 12, 32, 2.2], e)) }] }
       ] },
     s4mid: { name: '비행선', spr: 'b_airship', hp: 600, sc: 11000, ty: 58, sway: [56, 0.007, 10], leave: 'up', timeout: 2000,
-      boxes: [[0, 0, 24, 90]],
+      boxes: [[0, -5, 28, 45], [0, -66, 21, 16], [0, -90, 30, 6], [0, 49, 26, 9], [0, 65, 22, 7], [0, 78, 15, 6], [0, 88, 10, 4], [0, 94, 4, 2]],      // 몸통 · 뒤쪽 · 꼬리 날개 · 앞으로 갈수록 좁아지는 다섯 단
       parts: [{ x: 0, y: -52, spr: 'bt_s', hp: 50, fire: { k: 'aim', at: 100, every: 110, n: 3, spr: 0.6, sp: 1.7 } }, { x: 0, y: 6, spr: 'bt_s', hp: 50, fire: { k: 'aim', at: 140, every: 100, n: 1, sp: 2.2, rep: 3, gap: 8, bt: 'n' } }, { x: 0, y: 54, spr: 'bt_s', hp: 50, fire: { k: 'aim', at: 180, every: 100, n: 3, spr: 0.4, sp: 1.9 } }],
       phases: [{ until: 0.5, acts: [{ every: 170, at: 110, fn: (e, g) => { P.fan(g, e.x - 32, e.y + 24, D90 + 0.3, 3, 0.6, 1.6, 's'); P.fan(g, e.x + 32, e.y + 24, D90 - 0.3, 3, 0.6, 1.6, 's'); } }] },
         { until: 0, acts: [{ every: 130, at: 30, fn: (e, g) => P.ring(g, e.x, e.y + 88, 14, 1.4, 'l', g.rng() * 6) }, { every: 150, at: 90, fn: (e, g) => { P.fan(g, e.x - 32, e.y + 24, D90 + 0.3, 4, 0.8, 1.7, 's'); P.fan(g, e.x + 32, e.y + 24, D90 - 0.3, 4, 0.8, 1.7, 's'); } }] }] },
     s4boss: { name: '큰 전익기', spr: 'b_wing', hp: 2200, sc: 60000, ty: 62, sway: [16, 0.012, 10],
-      boxes: [[0, 4, 11, 38], [-44, -4, 34, 12], [44, -4, 34, 12], [-92, -30, 18, 8], [92, -30, 18, 8]],
+      boxes: [[0, 4, 8, 34], [0, 41, 4, 3]].concat(BOTH([13, 1.5, 5, 25.5], [26, -2, 8, 21], [42, -6.5, 8, 17.5], [58, -14, 8, 14], [74, -21.5, 8, 11.5], [90, -29.5, 8, 7.5], [106, -35, 8, 5])),      // 동체 · 기수 · 뒤로 젖힌 날개를 일곱 단으로
       parts: [{ x: -34, y: 4, spr: 'bt_s', hp: 60, fire: { k: 'aim', at: 100, every: 105, n: 2, spr: 0.24, sp: 2.0 } }, { x: 34, y: 4, spr: 'bt_s', hp: 60, fire: { k: 'aim', at: 150, every: 105, n: 2, spr: 0.24, sp: 2.0 } },
         { x: -70, y: -14, spr: 'bt_s', hp: 60, fire: { k: 'aim', at: 130, every: 120, n: 3, spr: 0.6, sp: 1.7 } }, { x: 70, y: -14, spr: 'bt_s', hp: 60, fire: { k: 'aim', at: 190, every: 120, n: 3, spr: 0.6, sp: 1.7 } }],
       phases: [

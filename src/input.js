@@ -37,7 +37,7 @@
       if (tg === 'BUTTON' && (e.code === 'Enter' || e.code === 'NumpadEnter' || e.code === 'Space')) return;      // 초점이 버튼에 있으면 그 버튼을 누른다
       e.preventDefault(); first();
       if (e.repeat) return;
-      k[a] = (k[a] || 0) + 1; k['_' + e.code] = a;
+      if (!k['_' + e.code]) { k[a] = (k[a] || 0) + 1; k['_' + e.code] = a; }      // 떼는 신호를 놓친 키가 두 번 세어져 눌린 채 남지 않게
       edge(a); if (e.code === 'Enter' || e.code === 'NumpadEnter') s.ok = true; if (e.code === 'Escape') s.back = true;
     });
     this.padDown = function (key) { const a = PADKEY[key]; if (!a || (self.active && !self.active())) return; first(); pad[a] = true; edge(a); if (key === 'enter') s.ok = true; };
