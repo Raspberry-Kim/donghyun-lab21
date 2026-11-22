@@ -5,7 +5,7 @@ const PW = require(process.env.PLAYWRIGHT || '/home/user/node_modules/playwright
   const b = await PW[engine || 'chromium'].launch();
   const p = await b.newPage({ viewport: { width: 1280, height: 1100 } });
   const errs = []; p.on('pageerror', e => errs.push('PAGEERR ' + e.message + '\n' + (e.stack || '').split('\n').slice(0, 4).join('\n'))); p.on('console', m => { if (m.type() === 'error') errs.push('CONSOLE ' + m.text()); });
-  await p.goto('http://127.0.0.1:8765/index.html?' + (query || ''));
+  await p.goto((process.env.DS_URL || 'http://127.0.0.1:8765/index.html') + '?' + (query || ''));
   await p.waitForFunction(() => document.body.classList.contains('ready'), null, { timeout: 60000 }).catch(() => errs.push('not ready'));
   const shot = async n => { if (!prefix || prefix === '-') return; const el = await p.$('#game'); await el.screenshot({ path: prefix + '-' + n + '.png' }); };
   let t = 0, last = '', bossShot = {}, deaths = 0, pl = 2, pc = 0, wall = Date.now(), maxB = 0;
