@@ -1,0 +1,8 @@
+<!doctype html><meta charset="utf-8"><body style="margin:0;background:#888"><canvas id="c"></canvas>
+<script src="../js/sketch.js"></script><script src="../js/art.js"></script><script src="../js/terrain.js"></script>
+<script>
+const S=DS.S, c=document.getElementById('c'); c.width=5*250*S/2; c.height=960*S/2; const g=c.getContext('2d');
+const t0=performance.now();
+for(let i=0;i<5;i++){ const pp=DS.makePaper(240*S,960*S,i+1); const t=DS.makeTerrain(i); g.drawImage(pp,i*250*S/2,0,240*S/2,960*S/2); g.drawImage(t,i*250*S/2,0,240*S/2,960*S/2); }
+console.log('ms',performance.now()-t0); document.title='ready';
+</script>

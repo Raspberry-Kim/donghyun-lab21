@@ -1,0 +1,16 @@
+<!doctype html><meta charset="utf-8"><body style="margin:0;background:#888">
+<canvas id="c"></canvas>
+<script src="../js/sketch.js"></script><script src="../js/art.js"></script><script src="../js/art2.js"></script><script src="../js/art3.js"></script>
+<script>
+const q=new URLSearchParams(location.search), names=(q.get('n')||Object.keys(DS.ART.defs).join(',')).split(','), Z=+(q.get('z')||2);
+const cols=+(q.get('cols')||6), S=DS.S;
+const sp=names.map(n=>DS.ART.get(n));
+let x=0,y=0,rowH=0,pos=[],W=+(q.get('w')||1400);
+sp.forEach(s=>{ const w=s.w*S*Z+24,h=s.h*S*Z+40; if(x+w>W){x=0;y+=rowH;rowH=0;} pos.push([x,y]); x+=w; rowH=Math.max(rowH,h); });
+const c=document.getElementById('c'); c.width=W; c.height=y+rowH; const g=c.getContext('2d');
+g.drawImage(DS.makePaper(W,c.height,3),0,0);
+// 배경 낙서를 조금 깔아 가림(종이색 채움)을 확인한다
+g.strokeStyle='rgba(60,60,60,.35)'; for(let i=0;i<c.height;i+=14){g.beginPath();g.moveTo(0,i);g.lineTo(W,i+30);g.stroke();}
+sp.forEach((s,i)=>{ g.drawImage(s.frames[0],pos[i][0]+12,pos[i][1]+10,s.w*S*Z,s.h*S*Z); g.fillStyle='#000'; g.font='14px sans-serif'; g.fillText(s.name,pos[i][0]+12,pos[i][1]+s.h*S*Z+28); });
+document.title='ready';
+</script>

@@ -1,0 +1,52 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using the metadata below."
+title: "Donghyuns (동현스): a single-player pencil-sketch vertical shooter laboratory in the manner of Strikers 1945 II, with the number of lives and bombs, the starting stage and the paper colour set through the esoteric language Donghyun-lang"
+type: software
+version: "0.01"
+date-released: "2026-11-22"
+authors:
+  - family-names: Kim
+    given-names: Dong Hyun
+    orcid: "https://orcid.org/0000-0001-9883-0229"
+    affiliation: "Inha University College of Medicine"
+license: MIT
+repository-code: "https://github.com/Raspberry-Kim/donghyun-lab21"
+url: "https://raspberry-kim.github.io/donghyun-lab21/"
+abstract: >-
+  Donghyuns is a browser-based, noncommercial toy that follows only the
+  broad frame of Strikers 1945 II (Psikyo, arcade, 1997): a vertically
+  scrolling shooter on a tall 240x320 field with a shot, a three-level
+  charge shot released by letting go of a held key, and a bomb, each
+  different for the three aircraft (XF5U Flying Pancake, Ki-84 Hayate,
+  P-38 Lightning); five stages, each with a mid-boss and a boss; and three
+  difficulty levels (beginner, intermediate, advanced). The number of lives
+  (1-9), the number of bombs (0-5), the starting stage (1-5) and the paper
+  colour (rough cream or sketchbook white) are chosen through a program
+  written in the esoteric programming language Donghyun-lang. Input is
+  keyboard, touch and gamepad, with fullscreen; the game is saved in three
+  browser slots and can be exported to and imported from a .dhsave file
+  that includes every enemy, bullet and the random-number state. There are
+  no image files: every aircraft, enemy, boss, terrain and the paper grain
+  is drawn by code as wobbly graphite strokes when the page opens, in
+  greyscale on paper. No graphics, sound, text, stage layout, bullet data
+  or code of the original game is used or extracted; all numbers are the
+  author's own. The MIT license applies to the Donghyuns code and
+  documentation; the page fonts are under the SIL Open Font License. See
+  LICENSE and CREDITS.md.
+keywords:
+  - shoot 'em up
+  - vertical shooter
+  - procedural drawing
+  - esoteric programming language
+  - JavaScript
+references:
+  - type: software
+    title: "Donghyun-lang (동현랭): a Korean esoteric programming language with a browser playground"
+    authors:
+      - family-names: Kim
+        given-names: Dong Hyun
+        orcid: "https://orcid.org/0000-0001-9883-0229"
+        affiliation: "Inha University College of Medicine"
+    version: "1.55"
+    license: MIT
+    repository-code: "https://github.com/Raspberry-Kim/donghyun-lang"
