@@ -1,4 +1,4 @@
-/* 기체 셋의 샷·모아 쏘기 세 단계·폭탄이 엔진에서 실제로 나가는지 (엔진만, 브라우저 없이) */
+/* 기체 넷의 샷·모아 쏘기 세 단계·폭탄이 엔진에서 실제로 나가는지 (엔진만, 브라우저 없이) */
 const fs = require('fs'), path = require('path'), vm = require('vm');
 const ctx = { window: {}, console, Math, JSON, Object, Array, Number, isFinite, Error, Float32Array, Uint8Array };
 ctx.window.DS = { BOOM: { s: 6, m: 7, l: 8 }, ART: { get: () => ({ w: 20, h: 20, frames: [0] }) } }; ctx.document = { createElement: () => ({ getContext: () => ({}), width: 0, height: 0 }) };
@@ -15,7 +15,7 @@ DS.PLANES.forEach((pl, plane) => {
   const res = HOLD.map(([n, want]) => {
     const g = fresh(0); step(g, n, { charge: true });
     const held = g.shots.length; step(g, 1, {});
-    const lv = pl.id === 'hayate' ? (g.beam ? g.beam.lv : 0) : pl.id === 'p38' ? ({ 0: 0, 4: 1, 7: 2, 10: 3 })[g.shots.filter(s => s.kind === 'rk').length] : Math.max(0, g.shots.filter(s => s.kind === 'disc').length - 1);
+    const lv = pl.id === 'hayate' ? (g.beam ? g.beam.lv : 0) : pl.id === 'p38' ? ({ 0: 0, 4: 1, 7: 2, 10: 3 })[g.shots.filter(s => s.kind === 'rk').length] : pl.id === 'shinden' ? (g.shots.filter(s => s.kind === 'gh')[0] || { lv: 0 }).lv : Math.max(0, g.shots.filter(s => s.kind === 'disc').length - 1);
     return { n, want, lv, held };
   });
   ok(res.every(r => r.lv === r.want && r.held === 0), pl.short + ' 모아 쏘기: ' + res.map(r => r.n + '걸음→' + r.lv + '단계').join(' · '));

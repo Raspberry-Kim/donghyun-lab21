@@ -25,9 +25,9 @@ const PW = require(process.env.PLAYWRIGHT || '/home/user/node_modules/playwright
   await p.screenshot({ path: 'qa/tmp/touch-0diff.png' });
   await tap(120, 171); s = await st(); ok(s.screen === 'plane' && s.diff === 'child', '눌러서 중급을 골랐다: ' + s.screen + ' ' + s.diff);
   await adv(200); await tap(20, 10); s = await st(); ok(s.screen === 'diff', '← 뒤로'); await tap(120, 171); await adv(100);
-  await tap(200, 100); s = await st(); ok(s.screen === 'plane' && s.sel === 2, '기체 한 번 누르면 고르기만: ' + s.sel);
+  await tap(150, 100); s = await st(); ok(s.screen === 'plane' && s.sel === 2, '기체 한 번 누르면 고르기만: ' + s.sel);
   await p.screenshot({ path: 'qa/tmp/touch-1plane.png' });
-  await tap(200, 100); await adv(300); s = await st(); ok(s.screen === 'game' && s.game.plane === 'p38', '한 번 더 누르면 시작 (P-38)');
+  await tap(150, 100); await adv(300); s = await st(); ok(s.screen === 'game' && s.game.plane === 'p38', '한 번 더 누르면 시작 (P-38)');
   await adv(3500); s = await st(); const x0 = s.game.player.x, y0 = s.game.player.y;
   await p.evaluate(() => document.querySelector('#game').scrollIntoView({ block: 'center' })); r = await box();
   // 끌기: 오른쪽으로 60칸, 위로 40칸
