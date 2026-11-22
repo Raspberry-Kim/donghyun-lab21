@@ -12,8 +12,8 @@
 ## 동현스가 새로 만든 것
 
 - 게임 엔진(`src/game.js`), 기체·적·보스·스테이지 자료(`src/data.js`), 연필 선과 종이(`src/sketch.js`), 그림(`src/art.js`·`art2.js`·`art3.js`·`terrain.js`), 화면(`src/render.js`), 입력(`src/input.js`), 출전·메뉴·저장(`src/app.js`), 동현랭 출전 규약과 예제(`src/examples.js`), 문서, 시험.
-- 그림 파일은 시작 화면의 제목 한 장(`src/title.png`)뿐이다. 비행기, 적, 보스, 땅, 구름, 폭발, 종이의 결은 쪽이 열릴 때 코드가 연필 선을 그어 만든다.
-- 시작 화면의 제목 ‘동현스’는 만든 사람이 넣은 손글씨다. 이 글씨에 대한 권리는 MIT 코드 라이선스와 별개로 만든 사람에게 있다. 코드를 가져다 쓸 때 이 글씨는 바꿔 쓰기를 권한다.
+- 그림 파일은 시작 화면의 제목 한 장(`src/title.png`)이다. 그 밖의 비행기, 적, 보스, 땅, 구름, 폭발, 종이의 결은 쪽이 열릴 때 코드가 연필 선을 그어 만든다.
+- 시작 화면의 제목 ‘동현스’는 제작자의 아내가 직접 쓴 글씨다. 이 글씨에 대한 권리는 MIT 코드 라이선스와 별개로 쓴 사람에게 있다. 코드를 가져다 쓸 때 이 글씨는 바꿔 쓰기를 권한다.
 - 동현랭 실행기(`src/donghyun.js`)는 [동현랭 저장소](https://github.com/Raspberry-Kim/donghyun-lang)의 v1.55를 고치지 않고 썼다. 합성 효과음과 게임패드, 편집기·전체 화면·저장 메뉴는 동현큐·동현램의 방식을 따랐다.
 
 ## 기체 이름
@@ -32,8 +32,8 @@ XF5U 플라잉 팬케이크(Vought), Ki-84 하야테(Nakajima), P-38 라이트�
 
 ## 글꼴
 
-검은고딕 Black Han Sans · Pretendard · 나눔고딕코딩 · 개구 Gaegu — SIL Open Font License 1.1 (`licenses/`). 게임 화면의 손글씨는 Gaegu에서 쓰는 글자만 추려 담았다.
+검은고딕 Black Han Sans · Pretendard · 나눔고딕코딩 · 개구 Gaegu — SIL Open Font License 1.1 (`licenses/`). 게임 화면의 글은 손글씨 글꼴 Gaegu에서 쓰는 글자만 추려 담았다. 시작 화면의 제목은 글꼴이 아니라 제작자의 아내가 직접 쓴 글씨다.
 
 ## 라이선스
 
-동현스 코드·문서: MIT (`LICENSE`). 동현랭 실행기: MIT (`licenses/DONGHYUN-MIT.txt`).
+동현스 코드·문서: MIT (`LICENSE`). 시작 화면의 제목 글씨(`src/title.png`)는 여기에 들지 않는다. 동현랭 실행기: MIT (`licenses/DONGHYUN-MIT.txt`).
