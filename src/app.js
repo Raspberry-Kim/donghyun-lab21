@@ -104,7 +104,7 @@ function result(text, kind) { const r = $('#result'); r.textContent = text; r.da
 function status(t, kind) { const s = $('#status'); s.textContent = t; s.dataset.kind = kind || ''; }
 function readyLabels() { $('#day').textContent = '출전 준비'; $('#turn-badge').textContent = `생명 ${cfg.lives} · 폭탄 ${cfg.bombs}`; $('#tile-info').textContent = `스테이지 ${cfg.stage} 「${stageName(cfg.stage - 1)}」부터. 종이는 ${paperName(cfg)}.`; $('#hint').innerHTML = ''; }
 let previewT = 0;
-function autoPreview() { clearTimeout(previewT); previewT = setTimeout(() => { if (A.live) return; try { const r = Donghyun.run(code.value, { maxSteps: 300000 }); const p = parseSortie(r.output); if (!p.err.length && p.go) { cfg = p.c; sortieCard(cfg); readyLabels(); } } catch (e) { } }, 250); }
+function autoPreview() { clearTimeout(previewT); previewT = setTimeout(() => { if (A.live || A.auto) return;   /* 자동 시험(?auto=1)에서는 주소로 준 값을 그대로 쓴다 */ try { const r = Donghyun.run(code.value, { maxSteps: 300000 }); const p = parseSortie(r.output); if (!p.err.length && p.go) { cfg = p.c; sortieCard(cfg); readyLabels(); } } catch (e) { } }, 250); }
 function sortie() {
   if (A.live || A.scr === 'load') return;
   let out;
