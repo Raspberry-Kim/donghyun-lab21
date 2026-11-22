@@ -500,9 +500,16 @@ const isPseudo=()=>stageFull.classList.contains('pseudo-full');
 const isFull=()=>fullEl()===stageFull||isPseudo();
 const SIDE_MQ=matchMedia('(orientation: landscape) and (pointer: coarse)');
 function setPseudo(on){ stageFull.classList.toggle('pseudo-full',on); document.documentElement.classList.toggle('pseudo-full-on',on); onFull(); }
-function exitFull(){ if(isPseudo()) return setPseudo(false); if(fullEl()===stageFull) (document.exitFullscreen||document.webkitExitFullscreen||(()=>{})).call(document); }
+/* 브라우저 전체 화면에서 Esc는 브라우저가 먼저 받아 전체 화면을 닫고 쪽에는 넘기지 않는다(Safari · Firefox · Chrome).
+   메뉴를 열려고 누른 Esc에 게임이 멈추지 않은 채 화면만 작아지지 않도록, 닫기 버튼이나 F가 아닌 길로 닫혔으면 메뉴를 연다. */
+let wasNative=false, leaving=false;
+function exitFull(){ if(isPseudo()) return setPseudo(false); if(fullEl()===stageFull){ leaving=true; (document.exitFullscreen||document.webkitExitFullscreen||(()=>{})).call(document); } }
 let hintTimer=0;
-function onFull(){ const on=isFull(); stageFull.classList.toggle('fs',on); stageFull.classList.toggle('side',on&&SIDE_MQ.matches);
+function onFull(){ const on=isFull(), native=fullEl()===stageFull;
+  if(wasNative&&!native){ if(!leaving&&tab==='play'&&inGame()&&!A.auto&&!menu) mainMenu(); leaving=false; }
+  if(native&&!wasNative) leaving=false;
+  wasNative=native;
+  stageFull.classList.toggle('fs',on); stageFull.classList.toggle('side',on&&SIDE_MQ.matches);
   $('#exit-full').hidden=!on; $('#full').textContent=on?'전체 화면 닫기':'전체 화면';
   clearTimeout(hintTimer); $('#full-hint').hidden=!on; if(on) hintTimer=setTimeout(()=>$('#full-hint').hidden=true,5000);
   fit(); setTimeout(fit,60); if(on) $('#full').blur(); }
