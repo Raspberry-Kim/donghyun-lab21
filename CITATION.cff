@@ -3,7 +3,7 @@ message: "If you use this software, please cite it using the metadata below."
 title: "Donghyuns (동현스): a single-player pencil-sketch vertical shooter laboratory in the manner of Strikers 1945 II, with the number of lives and bombs, the starting stage and the paper colour set through the esoteric language Donghyun-lang"
 type: software
 doi: "10.5281/zenodo.24435598"
-version: "0.30"
+version: "0.31"
 date-released: "2026-11-22"
 authors:
   - family-names: Kim
