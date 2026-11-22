@@ -1,8 +1,8 @@
 // node qa/ui.cjs [engine] -- 쪽 전체 흐름: 출전 준비 → 출전 → 난이도 → 기체 → 게임 → 메뉴 → 저장 → 불러오기 → 포기
-const PW = require(process.env.PLAYWRIGHT || '/home/user/node_modules/playwright');
+const { launch } = require('./launch.cjs');
 (async () => {
   const engine = process.argv[2] || 'chromium';
-  const b = await PW[engine].launch();
+  const b = await launch(engine);
   const p = await b.newPage({ viewport: { width: 1280, height: 800 } });
   const errs = [], out = []; let fail = 0;
   const ok = (c, m) => { out.push((c ? 'ok   ' : 'FAIL ') + m); if (!c) fail++; };
@@ -95,4 +95,5 @@ const PW = require(process.env.PLAYWRIGHT || '/home/user/node_modules/playwright
   s = await st(); ok(s.screen === 'ready', '오류 뒤에도 출전 준비');
   console.log(out.join('\n')); console.log(fail ? fail + ' FAILED' : 'all ok'); console.log(errs.length ? errs.slice(0, 8).join('\n') : 'no errors');
   await b.close();
+  if (fail || errs.length) process.exit(1);
 })();

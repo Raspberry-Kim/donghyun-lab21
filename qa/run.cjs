@@ -1,8 +1,8 @@
 // node qa/run.cjs <query> <prefix> [maxSec] [engine] -- 자동 조종으로 끝까지 돌리며 기록
-const PW = require(process.env.PLAYWRIGHT || '/home/user/node_modules/playwright');
+const { launch } = require('./launch.cjs');
 (async () => {
   const [, , query, prefix, maxSec, engine] = process.argv;
-  const b = await PW[engine || 'chromium'].launch();
+  const b = await launch(engine || 'chromium');
   const p = await b.newPage({ viewport: { width: 1280, height: 1100 } });
   const errs = []; p.on('pageerror', e => errs.push('PAGEERR ' + e.message + '\n' + (e.stack || '').split('\n').slice(0, 4).join('\n'))); p.on('console', m => { if (m.type() === 'error') errs.push('CONSOLE ' + m.text()); });
   await p.goto((process.env.DS_URL || 'http://127.0.0.1:8765/index.html') + '?' + (query || ''));

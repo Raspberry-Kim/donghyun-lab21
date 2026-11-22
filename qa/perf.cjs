@@ -1,8 +1,8 @@
 // node qa/perf.cjs [engine] -- 실제 시간으로 돌려 한 장면을 만드는 데 걸리는 시간
-const PW = require('/home/user/node_modules/playwright');
+const { launch } = require('./launch.cjs');
 (async () => {
   const eng = process.argv[2] || 'chromium';
-  const b = await PW[eng].launch();
+  const b = await launch(eng);
   for (const vp of [{ width: 1280, height: 1100, deviceScaleFactor: 2 }, { width: 390, height: 844, deviceScaleFactor: 3, hasTouch: true, isMobile: eng !== 'firefox' }]) {
     const ctx = await b.newContext({ viewport: { width: vp.width, height: vp.height }, deviceScaleFactor: vp.deviceScaleFactor, ...(vp.hasTouch && eng !== 'firefox' ? { hasTouch: true, isMobile: true } : {}) });
     const p = await ctx.newPage(); const errs = []; p.on('pageerror', e => errs.push(e.message));

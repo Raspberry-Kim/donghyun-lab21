@@ -93,7 +93,7 @@
 
 - `index.html` — 묶은 한 파일(글꼴 포함). `node build.cjs`로 `src/`에서 만든다.
 - `src/game.js` 엔진(기체·적·탄·보스·점수·저장) · `src/data.js` 기체·난이도·적·보스·스테이지 자료 · `src/sketch.js` 연필 선과 종이 · `src/art.js`·`art2.js`·`art3.js` 그림 · `src/terrain.js` 땅 · `src/render.js` 화면 · `src/input.js` 입력 · `src/app.js` 출전·메뉴·저장 · `src/examples.js` 예제 · `src/donghyun.js` 동현랭 실행기 v1.55 · `src/sfx.js` 효과음과 승리 팡파르 · `src/petals.js` 엔딩의 꽃비 · `src/gamepad.js` 게임패드 · `src/title.png` 시작 화면의 제목(제작자의 아내가 직접 쓴 글씨, 그림 파일은 이 한 장이다).
-- `qa/save.cjs` 엔진 저장·불러오기 왕복 · `qa/weap.cjs` 기체 넷의 샷·모아 쏘기·폭탄 · `qa/docs.cjs` 문서 예시와 판 번호 · `qa/fuzz.cjs` 마구 누르는 입력으로 일곱 스테이지를 돌며 멈춤·저장 왕복을 봄(node). `qa/hitbox.cjs` 맞는 범위와 그림이 어긋나지 않는지 · `qa/ui.cjs` 쪽 전체 흐름 · `qa/touch.cjs` 손가락 입력 · `qa/run.cjs` 일곱 스테이지 자동 완주 · `qa/victory.cjs` 엔딩의 팡파르와 꽃비 · `qa/tabs.cjs` 탭·휴대폰·어두운 화면 · `qa/perf.cjs` 속도(Playwright).
+- `qa/save.cjs` 엔진 저장·불러오기 왕복 · `qa/weap.cjs` 기체 넷의 샷·모아 쏘기·폭탄 · `qa/docs.cjs` 문서 예시와 판 번호 · `qa/fuzz.cjs` 마구 누르는 입력으로 일곱 스테이지를 돌며 멈춤·저장 왕복을 봄(node). `qa/hitbox.cjs` 맞는 범위와 그림이 어긋나지 않는지 · `qa/ui.cjs` 쪽 전체 흐름 · `qa/touch.cjs` 손가락 입력 · `qa/full.cjs` 전체 화면 · `qa/run.cjs` 일곱 스테이지 자동 완주 · `qa/victory.cjs` 엔딩의 팡파르와 꽃비 · `qa/tabs.cjs` 탭·휴대폰·어두운 화면 · `qa/perf.cjs` 속도(Playwright). `qa/launch.cjs`는 이 시험들이 브라우저를 띄울 때 함께 쓴다.
 - `tools/subset-font.py` — 게임 화면 손글씨(Gaegu)에서 쓰는 글자만 추린다. 게임 화면의 글을 고치면 다시 돌린다.
 
 ## 한계

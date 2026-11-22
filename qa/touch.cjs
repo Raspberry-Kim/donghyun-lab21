@@ -1,9 +1,14 @@
-// node qa/touch.cjs -- 휴대폰 크기·손가락 입력 확인 (Chromium 터치 에뮬레이션)
-const PW = require(process.env.PLAYWRIGHT || '/home/user/node_modules/playwright');
+// node qa/touch.cjs [chromium|webkit] -- 휴대폰 크기·손가락 입력 확인
+// chromium: 브라우저가 만드는 실제 손가락 이벤트(CDP)로 누르고 끈다.
+// webkit: 손가락을 끄는 이벤트를 밖에서 넣을 길이 없어, 쪽 안에서 만든 포인터 이벤트(pointerType 'touch')를 누른 자리의 요소에 보낸다.
+//         게임이 포인터 이벤트를 받아 움직이는 길은 같지만, 브라우저가 손가락을 포인터 이벤트로 바꾸는 단계는 거치지 않는다.
+const { launch } = require('./launch.cjs');
 (async () => {
-  const b = await PW.chromium.launch();
+  const engine = process.argv[2] || 'chromium';
+  if (engine !== 'chromium' && engine !== 'webkit') { console.log('touch.cjs는 chromium과 webkit에서 돈다 (받은 값: ' + engine + ')'); process.exit(2); }
+  const b = await launch(engine);
   const ctx = await b.newContext({ viewport: { width: 390, height: 780 }, deviceScaleFactor: 2, hasTouch: true, isMobile: true, userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1' });
-  const p = await ctx.newPage(); const cdp = await ctx.newCDPSession(p);
+  const p = await ctx.newPage(); const cdp = engine === 'chromium' ? await ctx.newCDPSession(p) : null;
   const errs = [], out = []; let fail = 0;
   const ok = (c, m) => { out.push((c ? 'ok   ' : 'FAIL ') + m); if (!c) fail++; };
   p.on('pageerror', e => errs.push('PAGEERR ' + e.message)); p.on('console', m => { if (m.type() === 'error') errs.push('CONSOLE ' + m.text()); });
@@ -13,7 +18,13 @@ const PW = require(process.env.PLAYWRIGHT || '/home/user/node_modules/playwright
   const st = async () => JSON.parse(await p.evaluate(() => window.render_game_to_text()));
   const box = async () => (await p.$('#game')).boundingBox();
   const L = async (x, y) => { const r = await box(); return { x: r.x + x / 240 * r.width, y: r.y + y / 320 * r.height }; };
-  const touch = (type, pts) => cdp.send('Input.dispatchTouchEvent', { type, touchPoints: pts.map((q, i) => ({ x: q.x, y: q.y, id: q.id == null ? i : q.id })) });
+  const down = new Set();
+  const synth = (type, q) => p.evaluate(([type, x, y, id]) => { const el = document.elementFromPoint(x, y) || document.body; el.dispatchEvent(new PointerEvent(type, { pointerId: 100 + id, pointerType: 'touch', clientX: x, clientY: y, bubbles: true, cancelable: true, composed: true })); }, [type, q.x, q.y, q.id]);
+  const touch = async (type, pts) => {
+    pts = pts.map((q, i) => ({ x: q.x, y: q.y, id: q.id == null ? i : q.id }));
+    if (cdp) return cdp.send('Input.dispatchTouchEvent', { type, touchPoints: pts });
+    for (const q of pts) { if (type === 'touchStart') { if (!down.has(q.id)) { down.add(q.id); await synth('pointerdown', q); } } else if (type === 'touchMove') await synth('pointermove', q); else { down.delete(q.id); await synth('pointerup', q); } }
+  };
   const tap = async (x, y) => { await p.evaluate(() => document.querySelector('#game').scrollIntoView({ block: 'center' })); const q = await L(x, y); await touch('touchStart', [{ ...q, id: 9 }]); await adv(50); await touch('touchEnd', [{ ...q, id: 9 }]); await adv(50); };
   const mid = async sel => { const r = await (await p.$(sel)).boundingBox(); return { x: r.x + r.width / 2, y: r.y + r.height / 2 }; };
   ok(await p.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1), '가로로 넘치지 않는다');
@@ -22,11 +33,11 @@ const PW = require(process.env.PLAYWRIGHT || '/home/user/node_modules/playwright
   let s = await st(); ok(s.screen === 'diff' && s.live, '출전 버튼 → 난이도 고르기');
   let r = await box(); ok(r.width <= 390 && Math.abs(r.height / r.width - 4 / 3) < 0.02, '게임 화면 ' + Math.round(r.width) + '×' + Math.round(r.height) + ' (3:4)');
   ok(await p.isVisible('#b-bomb') && await p.isVisible('#b-charge') && await p.isVisible('#b-pause'), '화면 버튼 셋이 보인다');
-  await p.screenshot({ path: 'qa/tmp/touch-0diff.png' });
+  await p.screenshot({ path: 'qa/tmp/touch-' + engine + '-0diff.png' });
   await tap(120, 171); s = await st(); ok(s.screen === 'plane' && s.diff === 'child', '눌러서 중급을 골랐다: ' + s.screen + ' ' + s.diff);
   await adv(200); await tap(20, 10); s = await st(); ok(s.screen === 'diff', '← 뒤로'); await tap(120, 171); await adv(100);
   await tap(150, 100); s = await st(); ok(s.screen === 'plane' && s.sel === 2, '기체 한 번 누르면 고르기만: ' + s.sel);
-  await p.screenshot({ path: 'qa/tmp/touch-1plane.png' });
+  await p.screenshot({ path: 'qa/tmp/touch-' + engine + '-1plane.png' });
   await tap(150, 100); await adv(300); s = await st(); ok(s.screen === 'game' && s.game.plane === 'p38', '한 번 더 누르면 시작 (P-38)');
   await adv(3500); s = await st(); const x0 = s.game.player.x, y0 = s.game.player.y;
   await p.evaluate(() => document.querySelector('#game').scrollIntoView({ block: 'center' })); r = await box();
@@ -38,7 +49,7 @@ const PW = require(process.env.PLAYWRIGHT || '/home/user/node_modules/playwright
   // 둘째 손가락 = 모아 쏘기
   const c = await L(200, 280), cur = { x: a.x + 60 * r.width / 240 / 1.25, y: a.y - 40 * r.height / 320 / 1.25, id: 1 };
   await touch('touchStart', [cur, { ...c, id: 2 }]); await adv(1500); s = await st(); ok(s.game.player.charge > 70, '둘째 손가락을 대고 있으면 힘이 모인다 ' + s.game.player.charge);
-  await p.screenshot({ path: 'qa/tmp/touch-2play.png' });
+  await p.screenshot({ path: 'qa/tmp/touch-' + engine + '-2play.png' });
   await touch('touchEnd', [{ ...c, id: 2 }]); await adv(100);
   ok(await p.evaluate(() => DS.app.g.shots.filter(q => q.kind === 'rk').length) > 0 && (await st()).game.player.charge === 0, '떼면 모아 쏘기가 나간다');
   // 폭탄 버튼
@@ -52,7 +63,7 @@ const PW = require(process.env.PLAYWRIGHT || '/home/user/node_modules/playwright
   // 메뉴 버튼
   await touch('touchEnd', [cur]); await adv(50);
   await p.tap('#b-pause'); await adv(100); s = await st(); ok(s.paused && await p.isVisible('#menu'), '메뉴 버튼 → 멈춤 메뉴');
-  await p.screenshot({ path: 'qa/tmp/touch-3menu.png' });
+  await p.screenshot({ path: 'qa/tmp/touch-' + engine + '-3menu.png' });
   const t0 = (await st()).game.t; await adv(500); ok((await st()).game.t === t0, '메뉴가 열린 동안 게임은 멈춘다');
   const items = await p.$$eval('#menu .mi', e => e.map(x => x.textContent.trim())); out.push('     메뉴: ' + items.join(' | '));
   await p.tap('#menu .mi >> nth=0'); await adv(100); s = await st(); ok(!s.paused, '「' + items[0] + '」을 누르면 이어진다');
@@ -63,7 +74,8 @@ const PW = require(process.env.PLAYWRIGHT || '/home/user/node_modules/playwright
   await p.tap('#menu .mi >> nth=0'); await adv(200);
   ok(await p.evaluate(() => !!localStorage.getItem('donghyuns:slot1')), '칸 1에 저장했다');
   await p.evaluate(() => window.__donghyuns.closeMenu()); await adv(50);
-  await p.screenshot({ path: 'qa/tmp/touch-4page.png', fullPage: true });
-  console.log(out.join('\n')); console.log(fail ? fail + ' FAILED' : 'all ok'); console.log(errs.length ? errs.join('\n') : 'no errors');
+  await p.screenshot({ path: 'qa/tmp/touch-' + engine + '-4page.png', fullPage: true });
+  console.log(out.join('\n')); console.log(engine + (cdp ? ' (실제 손가락 이벤트)' : ' (쪽 안에서 만든 포인터 이벤트)') + ': ' + (fail ? fail + ' FAILED' : 'all ok')); console.log(errs.length ? errs.join('\n') : 'no errors');
   await b.close();
+  if (fail || errs.length) process.exit(1);
 })();

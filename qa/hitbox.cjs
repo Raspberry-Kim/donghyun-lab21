@@ -1,10 +1,10 @@
 /* 맞는 범위가 그림과 어긋나지 않는지: 보스·포탑·보통 적의 상자를 그림의 연필 자국과 견준다.
    상자가 그림 밖으로 나가 있으면 내 탄이 닿기 전에 사라져 보인다(v0.01의 전함). */
-const { chromium } = require('/home/user/node_modules/playwright');
+const { launch } = require('./launch.cjs');
 const URL = process.env.DS_URL || 'http://127.0.0.1:8765/';
 const VERBOSE = process.argv.includes('-v');
 (async () => {
-  const b = await chromium.launch(); const pg = await b.newPage(); const errs = [];
+  const b = await launch('chromium'); const pg = await b.newPage(); const errs = [];
   pg.on('pageerror', e => errs.push(String(e)));
   await pg.goto(URL); await pg.waitForFunction(() => document.body.classList.contains('ready'), null, { timeout: 60000 });
   const rows = await pg.evaluate(() => {
