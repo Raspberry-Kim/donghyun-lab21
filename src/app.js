@@ -397,7 +397,7 @@ function draw() {
   }
   if (A.scr === 'ready') {
     R.draw(null); R.backdrop(t * 0.5, 0.5);
-    T(DS.TITLE, W / 2, 76, 56); T(DS.SUBTITLE, W / 2, 118, 14, 'center', 0.9);
+    R.title(W / 2, 69, 160); T(DS.SUBTITLE, W / 2, 120, 14, 'center', 0.9);
     [1, 0, 2].forEach((pi, i) => plane(pi, 62 + i * 58, 176 + Math.sin(t * 0.05 + i * 2) * 4 + (i === 1 ? -10 : 0), 1, t + i * 3));
     R.box(30, 214, 180, 50, 3, 0.6, 0.55, 0.6);
     T(`생명 ${cfg.lives} · 폭탄 ${cfg.bombs}`, W / 2, 230, 13);
@@ -510,7 +510,7 @@ $('#full').onclick=()=>{ if(isFull()) return exitFull(); if(!A.live) return;
     if(r&&r.catch) r.catch(()=>setPseudo(true)); }catch(e){ setPseudo(true); } };
 
 const fontsReady = (document.fonts && document.fonts.load) ? Promise.all([document.fonts.load("700 30px Gaegu", '동현스 0123'), document.fonts.load("400 16px Gaegu", '동현스')]).catch(() => { }) : Promise.resolve();
-Promise.race([fontsReady, new Promise(r => setTimeout(r, 2500))]).then(() => {
+Promise.race([Promise.all([fontsReady, R.titleReady]), new Promise(r => setTimeout(r, 2500))]).then(() => {
   draw(); requestAnimationFrame(frame);
   setTimeout(() => warm(() => { R.prepare(0); A.scr = 'ready'; A.t = 0; document.body.classList.add('ready'); if (A.auto) go(); }), 0);
 });

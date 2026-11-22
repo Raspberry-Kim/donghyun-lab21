@@ -51,6 +51,17 @@
     c.globalAlpha = (alpha == null ? 1 : alpha) * 0.9; c.fillStyle = DS.INK; c.fillText(txt, x * S, y * S); c.globalAlpha = 1;
   };
 
+  /* 시작 화면 제목: 손글씨 그림(src/title.png). 그림을 읽지 못하면 글꼴로 쓴다. */
+  R.titleReady = new Promise(function (done) {
+    if (!DS.TITLE_PNG || typeof Image === 'undefined') return done();
+    const im = new Image(); im.onload = function () { R.titleImg = im; done(); }; im.onerror = function () { done(); }; im.src = DS.TITLE_PNG;
+  });
+  R.title = function (x, y, w) {      // 가운데 (x, y), 너비 w칸
+    const im = this.titleImg; if (!im) { this.text(DS.TITLE, x, y + 4, 56, 'center'); return; }
+    const c = this.c, h = w * im.height / im.width; c.globalAlpha = 0.92;
+    c.drawImage(im, Math.round((x - w / 2) * S), Math.round((y - h / 2) * S), Math.round(w * S), Math.round(h * S)); c.globalAlpha = 1;
+  };
+
   R.enemy = function (e, g) {
     const d = e.def, fi = ((g.t / 10) | 0) + e.id, al = e.flash > 0 ? 0.45 : null;
     let x = e.x, y = e.y;
