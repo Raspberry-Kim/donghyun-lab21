@@ -92,7 +92,7 @@
       else if (g.bombK === 'hayate') g.wings.forEach((w, i) => { const s = this.spr('wing', w.x, w.y, 0, 1, 1, (t >> 3) + i); this.props(s, w.x, w.y, 0, t + i); });
     }
     // 주인공
-    if (p.dead <= 0 && !(p.inv > 0 && g.bombT <= 0 && p.ctrl && ((t >> 2) & 1))) {
+    if (p.dead <= 0 && !(p.inv > 0 && g.bombT <= 0 && p.ctrl && g.mode !== 'clear' && ((t >> 2) & 1))) {
       const sx = 1 - 0.17 * Math.abs(p.bank), s = this.spr(g.plane.spr, p.x, p.y, 0, sx, 1, (t / 10) | 0);
       this.props(s, p.x, p.y, 0, t, sx);
       if (p.chg > 0) {
