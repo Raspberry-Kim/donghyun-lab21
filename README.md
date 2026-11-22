@@ -1,9 +1,13 @@
 # 동현스 v0.01
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24435598.svg)](https://doi.org/10.5281/zenodo.24435598)
+
 동현랭으로 출전 조건을 정하는 **1인용 세로 슈팅 게임**이다. 거친 미색 종이 위에 연필로 그린 비행기를 조종한다. 부제는 ‘연필로 그린 1945-2’.
 동현 시리즈의 스물두 번째 작은 실험이다. 1997년 오락실 게임 「스트라이커즈 1945 II」의 큰 틀만 참고했고 엔진·그림·소리·글은 모두 새로 만들었다.
 
 바로 하기: https://raspberry-kim.github.io/donghyun-lab21/
+
+모든 판을 묶는 DOI는 [`10.5281/zenodo.24435598`](https://doi.org/10.5281/zenodo.24435598)이다. 이번 판은 [v0.01 릴리스](https://github.com/Raspberry-Kim/donghyun-lab21/releases/tag/v0.01)이며 Zenodo 보관본은 [records/24435599](https://zenodo.org/records/24435599)(DOI `10.5281/zenodo.24435599`)이다.
 
 ## 규칙
 
