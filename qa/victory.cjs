@@ -1,10 +1,10 @@
 // node qa/victory.cjs [engine] -- 끝판왕을 이긴 엔딩의 축하: 팡파르(pomp)와 꽃비가 나오는지,
 // 꽃비가 게임 화면 안에 놓이고 누르기를 가로채지 않는지, 약 10초 뒤 스스로 걷히는지, 출전 준비로 돌아가거나 저장한 판을 불러오면 함께 멈추는지,
 // 소리를 꺼도 꽃비는 내리고 팡파르는 울리지 않는지, 스테이지 클리어 문구에 예전 표현이 남지 않았는지 본다.
-const PW = require(process.env.PLAYWRIGHT || '/home/user/node_modules/playwright');
+const { launch } = require('./launch.cjs');
 (async () => {
   const engine = process.argv[2] || 'chromium';
-  const b = await PW[engine].launch(engine === 'chromium' ? { args: ['--autoplay-policy=no-user-gesture-required'] } : {});
+  const b = await launch(engine, engine === 'chromium' ? { args: ['--autoplay-policy=no-user-gesture-required'] } : {});
   const p = await b.newPage({ viewport: { width: 1280, height: 800 } });
   const errs = []; let fail = 0;
   const ok = (c, m) => { console.log((c ? 'ok   ' : 'FAIL ') + m); if (!c) fail++; };

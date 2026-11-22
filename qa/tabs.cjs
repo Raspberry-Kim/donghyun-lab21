@@ -1,8 +1,8 @@
 /* 탭·휴대폰·어두운 화면 캡처: node qa/tabs.cjs [engine] */
-const pw = require('/home/user/node_modules/playwright');
+const { launch } = require('./launch.cjs');
 (async () => {
   const eng = process.argv[2] || 'chromium';
-  const b = await pw[eng].launch();
+  const b = await launch(eng);
   const errs = [];
   for (const [name, vp, mob] of [['desk', { width: 1280, height: 900 }, false], ['phone', { width: 390, height: 780 }, true]]) {
     const ctx = await b.newContext({ viewport: vp, hasTouch: mob, isMobile: mob && eng !== 'firefox', deviceScaleFactor: mob ? 2 : 1 });
@@ -25,4 +25,5 @@ const pw = require('/home/user/node_modules/playwright');
   }
   await b.close();
   console.log(errs.length ? errs.join('\n') : 'no errors');
+  if (errs.length) process.exit(1);
 })();
