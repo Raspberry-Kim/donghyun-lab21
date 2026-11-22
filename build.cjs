@@ -7,7 +7,7 @@ for(const name of fs.readdirSync(path.join(root,'fonts')))
   css=css.replaceAll('./fonts/'+name,'data:font/woff2;base64,'+fs.readFileSync(path.join(root,'fonts',name)).toString('base64'));
 if(/\.\/fonts\//.test(css))throw new Error('묶지 못한 글꼴이 있다');
 const titlePng='window.DS.TITLE_PNG="data:image/png;base64,'+fs.readFileSync(path.join(root,'src','title.png')).toString('base64')+'";';      // 시작 화면 제목 손글씨
-const JS=['donghyun.js','sketch.js','art.js','art2.js','art3.js','terrain.js','data.js','game.js','render.js','input.js','sfx.js','examples.js','gamepad.js','app.js'];
+const JS=['donghyun.js','sketch.js','art.js','art2.js','art3.js','terrain.js','data.js','game.js','render.js','input.js','sfx.js','petals.js','examples.js','gamepad.js','app.js'];
 const html=src('index.html')
   .replace('__SERIES_NAV__',()=>src('series.html'))
   .replace('__BRAND_ICON__',()=>src('brand-icon.txt').trim())

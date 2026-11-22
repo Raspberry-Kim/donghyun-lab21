@@ -3,7 +3,7 @@ message: "If you use this software, please cite it using the metadata below."
 title: "Donghyuns (동현스): a single-player pencil-sketch vertical shooter laboratory in the manner of Strikers 1945 II, with the number of lives and bombs, the starting stage and the paper colour set through the esoteric language Donghyun-lang"
 type: software
 doi: "10.5281/zenodo.24435598"
-version: "0.20"
+version: "0.30"
 date-released: "2026-11-22"
 authors:
   - family-names: Kim
@@ -19,9 +19,9 @@ abstract: >-
   scrolling shooter on a tall 240x320 field with a shot, a three-level
   charge shot released by letting go of a held key, and a bomb, each
   different for the four aircraft (XF5U Flying Pancake, Ki-84 Hayate,
-  P-38 Lightning, J7W Shinden); five stages, each with a mid-boss and a boss; and three
+  P-38 Lightning, J7W Shinden); seven stages, each with a mid-boss and a boss; and three
   difficulty levels (beginner, intermediate, advanced). The number of lives
-  (1-9), the number of bombs (0-5), the starting stage (1-5) and the paper
+  (1-9), the number of bombs (0-5), the starting stage (1-7) and the paper
   colour (rough cream or sketchbook white) are chosen through a program
   written in the esoteric programming language Donghyun-lang. Input is
   keyboard, touch and gamepad, with fullscreen; the game is saved in three
@@ -30,7 +30,10 @@ abstract: >-
   image file is the title on the start screen, written by hand by the
   author's wife; every aircraft, enemy, boss, terrain and the paper grain
   is drawn by code as wobbly graphite strokes when the page opens, in
-  greyscale on paper. No graphics, sound, text, stage layout, bullet data
+  greyscale on paper. Defeating the final boss is celebrated with falling
+  petals and a short fanfare synthesised in the browser from the trio melody
+  of Elgar's Pomp and Circumstance March No. 1 (1901, public domain); no
+  recording is used. No graphics, sound, text, stage layout, bullet data
   or code of the original game is used or extracted; all numbers are the
   author's own. The MIT license applies to the Donghyuns code and
   documentation; the page fonts are under the SIL Open Font License, and

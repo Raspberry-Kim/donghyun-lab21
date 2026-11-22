@@ -57,7 +57,7 @@
       const road = []; for (let y = -30; y <= TH + 30; y += 12) road.push([56 + 26 * per(y, 2) + 8 * per(y, 5, 1), y]);
       p.line(road.map(q => [q[0] - 2.2, q[1]]), { s: true, w: 0.4, a: 0.7 }); p.line(road.map(q => [q[0] + 2.2, q[1]]), { s: true, w: 0.4, a: 0.7 });
       for (let y = 0; y < TH; y += 3.2) p.seg(115.6, y, 124.4, y, { w: 0.34, a: 0.5, passes: 1, noOver: true });
-      p.seg(117.4, -4, 117.4, TH + 4, { w: 0.5, a: 0.9, noOver: true }); p.seg(122.6, -4, 122.6, TH + 4, { w: 0.5, a: 0.9, noOver: true });
+      p.seg(117.4, -4, 117.4, TH + 4, { w: 0.45, a: 0.7, noOver: true }); p.seg(122.6, -4, 122.6, TH + 4, { w: 0.45, a: 0.7, noOver: true });
     },
     /* 3. 먹구름 항구 */
     function (p, r) {
@@ -116,6 +116,58 @@
         else { const w = 30 + r() * 20; p.rect(x, y, w, 6, { paper: false, w: 0.45, a: 0.85, hatch: { ang: 0.9, gap: 2.2, a: 0.7, w: 0.5 } }); }
       }
       for (let i = 0; i < 26; i++) { let x = 10 + r() * 220, y = 10 + r() * 940; const pts = [[x, y]]; for (let k = 0; k < 4; k++) { x += (r() - 0.5) * 9; y += 2 + r() * 5; pts.push([x, y]); } p.line(pts, { w: 0.24, a: 0.4, passes: 1 }); }
+    },
+    /* 6. 모눈 도시 — 모눈종이 위의 길과 지붕. 큰길이 가운데로 지나고 가로줄 길이 여섯 번 건넌다 */
+    function (p, r) {
+      for (let x = 0; x <= W; x += 20) p.seg(x, -4, x, TH + 4, { w: 0.2, a: 0.3, passes: 1, noOver: true });
+      for (let y = 0; y < TH; y += 20) p.seg(-2, y, W + 2, y, { w: 0.2, a: 0.3, passes: 1, noOver: true });
+      const A0 = 105, A1 = 135, ST = 160, HW = 10;
+      for (let k = 0; k < 6; k++) {
+        const y0 = k * ST + HW, y1 = (k + 1) * ST - HW;
+        [A0, A1].forEach(x => p.seg(x, y0, x, y1, { w: 0.45, a: 0.7, noOver: true }));
+        for (let y = y0 + 6; y < y1 - 6; y += 14) p.seg(120, y, 120, y + 7, { w: 0.4, a: 0.5, passes: 1, noOver: true });
+        [[-2, A0], [A1, W + 2]].forEach(q => { p.seg(q[0], y0, q[1], y0, { w: 0.45, a: 0.7, noOver: true }); p.seg(q[0], y1, q[1], y1, { w: 0.45, a: 0.7, noOver: true }); for (let x = q[0] + 8; x < q[1] - 8; x += 14) p.seg(x, y1 + HW, x + 7, y1 + HW, { w: 0.36, a: 0.45, passes: 1, noOver: true }); });
+        for (let x = A0 + 3; x < A1 - 1; x += 4) { p.seg(x, y0 - 4, x, y0 - 1, { w: 0.4, a: 0.5, passes: 1, noOver: true }); p.seg(x, y1 + 1, x, y1 + 4, { w: 0.4, a: 0.5, passes: 1, noOver: true }); }      // 건널목
+        /* 한 구역을 지붕 여러 개로 나눈다 */
+        [[3, A0 - 3], [A1 + 3, W - 3]].forEach(q => {
+          let y = y0 + 3;
+          while (y < y1 - 14) {
+            const h = Math.min(y1 - 3 - y, 20 + r() * 26); let x = q[0];
+            while (x < q[1] - 12) {
+              const w = Math.min(q[1] - x, 18 + r() * 30), cx = x + w / 2, cy = y + h / 2, k2 = r();
+              if (k2 < 0.12) trees(p, r, cx, cy, w * 0.4, h * 0.4, Math.round(w * h / 50));
+              else {
+                p.rect(cx, cy, w - 3, h - 3, { paper: false, tone: 0.03 + r() * 0.05, w: 0.4, a: 0.62, hatch: { ang: r.pick([0, 1.5708, 0.78, -0.78]), gap: 1.9 + r() * 1.8, a: 0.16 + r() * 0.12, side: r.pick(['r', 'b', 'r', 'b', null]), f: 0.45 } });
+                if (k2 < 0.4) p.rect(cx + (r() - 0.5) * w * 0.3, cy + (r() - 0.5) * h * 0.3, w * 0.36, h * 0.36, { paper: false, tone: 0.13, w: 0.3, a: 0.55 });
+                else if (k2 < 0.58) { p.ell(cx - w * 0.2, cy, 2.6, 2.6, { paper: false, tone: 0.16, w: 0.3, a: 0.6 }); p.ell(cx + w * 0.2, cy, 2.6, 2.6, { paper: false, tone: 0.16, w: 0.3, a: 0.6 }); }
+                else if (k2 < 0.63 && w > 24 && h > 22) { p.ell(cx, cy, 7, 7, { paper: false, w: 0.36, a: 0.5, passes: 1 }); p.seg(cx - 2.4, cy - 3, cx - 2.4, cy + 3, { w: 0.4, a: 0.55, passes: 1 }); p.seg(cx + 2.4, cy - 3, cx + 2.4, cy + 3, { w: 0.4, a: 0.55, passes: 1 }); p.seg(cx - 2.4, cy, cx + 2.4, cy, { w: 0.4, a: 0.55, passes: 1 }); }
+                else if (k2 < 0.84) p.seg(x + 3, cy, x + w - 3, cy, { w: 0.28, a: 0.5, passes: 1 });
+              }
+              x += w;
+            }
+            y += h;
+          }
+        });
+      }
+      for (let i = 0; i < 16; i++) { const y = 20 + r() * 920, up = r() < 0.5; p.rect(up ? 112.5 : 127.5, y, 4, 7, { paper: false, tone: 0.2, w: 0.3, a: 0.65 }); }      // 큰길의 차
+    },
+    /* 7. 백지 하늘 — 아직 아무것도 그리지 않은 종이. 옅은 밑그림 선, 지우개 자국, 구름 윤곽만 있다 */
+    function (p, r) {
+      for (let i = 0; i < 9; i++) {
+        const cx = 20 + r() * 200, cy = 50 + i * 104 + r() * 30, rx = 34 + r() * 30, ry = 14 + r() * 10, n = 12, pts = [];
+        for (let k = 0; k < n; k++) { const a = k / n * TAU, q = 0.8 + 0.34 * r(); pts.push([cx + Math.cos(a) * rx * q, cy + Math.sin(a) * ry * q]); }
+        p.poly(pts, { s: true, paper: false, w: 0.34, a: 0.42, passes: 1, hatch: { side: 'b', f: 0.4, ang: 0.2, gap: 2.2, a: 0.16 } });
+      }
+      [[0.34, 60], [-0.3, 380], [0.22, 700]].forEach(q => { const y0 = q[1]; p.seg(-4, y0, W + 4, y0 + q[0] * W, { w: 0.22, a: 0.3, passes: 1, noOver: true }); p.seg(-4, y0 + 5, W + 4, y0 + 5 + q[0] * W, { w: 0.2, a: 0.2, passes: 1, noOver: true }); });      // 자를 대고 그은 밑그림 선
+      for (let i = 0; i < 7; i++) {      // 밑그림의 동그라미와 가운데 십자
+        const x = 30 + r() * 180, y = 70 + i * 128 + r() * 40, R0 = 9 + r() * 12;
+        p.ell(x, y, R0, R0, { paper: false, w: 0.24, a: 0.3, passes: 1 }); p.seg(x - R0 - 3, y, x + R0 + 3, y, { w: 0.2, a: 0.28, passes: 1, noOver: true }); p.seg(x, y - R0 - 3, x, y + R0 + 3, { w: 0.2, a: 0.28, passes: 1, noOver: true });
+      }
+      for (let i = 0; i < 12; i++) {      // 지우개로 문지른 자국
+        const x = 20 + r() * 200, y = 20 + r() * 920, L = 10 + r() * 16, a = -0.5 + r() * 0.4;
+        for (let k = 0; k < 5; k++) p.seg(x + k * 1.6, y + k * 0.9, x + k * 1.6 + Math.cos(a) * L, y + k * 0.9 + Math.sin(a) * L, { w: 0.9, a: 0.1, passes: 1, noOver: true });
+      }
+      for (let i = 0; i < 40; i++) { const x = 8 + r() * 224, y = 8 + r() * 944; p.line([[x - 2, y], [x, y - 0.8], [x + 2.4, y - 0.2]], { s: true, w: 0.24, a: 0.3, passes: 1, noOver: true }); }
     }
   ];
 

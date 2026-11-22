@@ -82,8 +82,8 @@ $('#run').onclick=()=>sortie();
 
 /* ---------- 출전 규약: 첫 정수 생명 수(필수) · 둘째 폭탄 수 · 셋째 시작 스테이지 · 넷째 배경 색 ---------- */
 const DEFAULT = { lives: 3, bombs: 2, stage: 1, bg: 1 };
-let cfg = { lives: num('lives', 3, 1, 9), bombs: num('bombs', 2, 0, 5), stage: num('stage', 1, 1, 5), bg: num('bg', 1, 1, 2) };
-const NSTAGE = DS.STAGES.length, NPAPER = DS.PAPERS.length;
+let cfg = { lives: num('lives', 3, 1, 9), bombs: num('bombs', 2, 0, 5), stage: num('stage', 1, 1, DS.STAGES.length), bg: num('bg', 1, 1, 2) };
+const NSTAGE = DS.STAGES.length, NPAPER = DS.PAPERS.length, NWORD = ['한', '두', '세', '네', '다섯', '여섯', '일곱', '여덟', '아홉'][NSTAGE - 1] || String(NSTAGE);
 function parseSortie(out) {
   const tok = out.split(/\s+/).filter(Boolean).map(Number), c = { ...DEFAULT }, err = [];
   if (tok.length === 0) return { c, go: false, err: [] };
@@ -155,7 +155,11 @@ function startGame() {
     $('#hint').innerHTML = HINT0; status('진행 중'); hud();
   });
 }
+/* 끝판왕을 이긴 축하: 팡파르(약 10초)와 꽃비. 엔딩 화면을 떠나면 함께 멈춘다. 소리를 꺼 두어도 꽃비는 내린다 */
+function fete(g) { if (!SFX.pomp()) SFX.play('clear'); DHPETALS.start($('.board-stage.ds-board'), { dur: 10.4, alive: () => A.g === g && g.mode === 'ending', cut: () => SFX.stop() }); }
+function feteOff() { DHPETALS.stop(); SFX.stop(); }
 function backToSetup() {
+  feteOff();
   if (A.g) A.hi = Math.max(A.hi, A.g.hi);
   A.g = null; A.live = false; A.turn = 0; closeMenu(); IN.clear(); watch = null;
   $('#setup-panel').hidden = false; $('#hud').hidden = true; $('#board-wrap').classList.remove('live'); $('#touchpad').classList.remove('on'); exitFull(); $('#full').disabled = true;
@@ -184,7 +188,7 @@ function observe() {
     if (now.boss && w.boss !== now.boss) log(`${now.boss} 등장.`);
     if (!w.dead && now.dead) log(`기체를 잃었다. 남은 예비 기체 ${g.lives}.`);
     if (now.lives > w.lives && now.conts === w.conts) log('기체가 하나 늘었다.');
-    if (w.mode !== 'clear' && now.mode === 'clear') { log(`스테이지 ${g.stage + 1} 「${g.S.name}」 넘김. 점수 ${NUM(g.score)}.`); status(`스테이지 ${g.stage + 1} 넘김`); }
+    if (w.mode !== 'clear' && now.mode === 'clear') { log(`스테이지 ${g.stage + 1} 「${g.S.name}」 클리어. 점수 ${NUM(g.score)}.`); status(`스테이지 ${g.stage + 1} 클리어`); }
     if (w.mode !== 'over' && now.mode === 'over') { log(`게임 오버. 점수 ${NUM(g.score)}.`); status('게임 오버', 'error'); $('#hint').innerHTML = '<span><kbd>↑</kbd><kbd>↓</kbd>고르기</span><span><kbd>X</kbd>정하기</span>'; }
     if (w.mode === 'clear' && now.mode !== 'clear') status('진행 중');
   }
@@ -226,6 +230,7 @@ function restore(data) {
   const g = DS.Game.load(data.state, { sfx: SFX.play, hi: A.hi });             // 맞지 않으면 여기서 멈춘다. 지금 판은 그대로 남는다
   const c = data.cfg || {}, int = (v, lo, hi, d) => Number.isInteger(v) && v >= lo && v <= hi ? v : d;
   cfg = { lives: g.life0, bombs: g.bomb0, stage: int(c.stage, 1, NSTAGE, 1), bg: int(c.bg, 1, NPAPER, 1) };
+  feteOff();
   A.g = null; A.live = true; A.turn = 0; closeMenu(); SFX.unlock(); IN.clear(); sortieCard(cfg); liveUI();
   const l = $('#log'); l.innerHTML = ''; for (const t of (Array.isArray(data.logs) ? data.logs : []).slice(-38)) log(String(t).slice(0, 200));
   status('불러오는 중');
@@ -367,7 +372,7 @@ function stepGame() {
     hud(); return;
   }
   if (g.mode === 'next') {
-    if (g.stage < NSTAGE - 1) { A.turn = 1; SFX.play('page'); } else { g.mode = 'ending'; g.modeT = 0; SFX.play('clear'); log(`다섯 스테이지를 모두 넘겼다. 점수 ${NUM(g.score)}.`); status('다섯 스테이지 완료'); $('#hint').innerHTML = '<span><kbd>X</kbd>출전 준비로</span>'; }
+    if (g.stage < NSTAGE - 1) { A.turn = 1; SFX.play('page'); } else { g.mode = 'ending'; g.modeT = 0; fete(g); log(`축하한다. ${NWORD} 스테이지를 모두 클리어했다. 점수 ${NUM(g.score)}.`); status(`${NWORD} 스테이지 클리어`); $('#hint').innerHTML = '<span><kbd>X</kbd>출전 준비로</span>'; }
     return;
   }
   if (g.mode === 'ending') { g.update(inp); if (g.modeT > 150 && (inp.ok || inp.tap) && !A.auto) backToSetup(); return; }
@@ -412,7 +417,7 @@ function draw() {
     DS.DIFFS.forEach((d, i) => {
       const r = DIFF_R[i], on = i === A.sel;
       R.box(r[0], r[1], r[2], r[3], i + (on ? ((t / 9) | 0) % 2 * 5 : 0), on ? 1.4 : 0.6, on ? 0.95 : 0.5, on ? 0.75 : 0.45);
-      T(d.name, W / 2, r[1] + 18, 19, 'center', on ? 1 : 0.6); T(d.sub, W / 2, r[1] + 37, 9.5, 'center', on ? 0.9 : 0.55);
+      T(d.name, W / 2, r[1] + 18, 19, 'center', on ? 1 : 0.6); if (d.rec) T('(권장)', W / 2 + 21, r[1] + 19, 11, 'left', on ? 0.9 : 0.55); T(d.sub, W / 2, r[1] + 37, 9.5, 'center', on ? 0.9 : 0.55);
       if (on) plane(A.plane, r[0] + 20, r[1] + 25, 0.6, t);
     });
     hint(IN.touch ? '눌러서 고른다' : '↑↓ 고르기 · X 정하기 · Z 뒤로'); T('← 뒤로', 8, 13, 9.5, 'left', 0.75);
@@ -447,7 +452,7 @@ function draw() {
     if (g.modeT > 50) { T('점수 ' + g.score, W / 2, 130, 11, 'center', 0.85); menuDraw(['이어 하기', '출전 준비로'], OVER_R); T('이어 하면 점수는 0부터 다시 센다', W / 2, 222, 8.5, 'center', 0.7); }
   } else if (g.mode === 'ending') {
     const a = Math.min(1, g.modeT / 60); R.wash(a * 0.72);
-    T('다섯 스테이지를 모두 넘겼다', W / 2, 92, 19, 'center', a);
+    T('축하한다', W / 2, 66, 14, 'center', a * 0.9); T(NWORD + ' 스테이지 클리어', W / 2, 92, 23, 'center', a);
     plane(A.plane, W / 2, 140 + Math.sin(g.modeT * 0.05) * 4, 1, g.modeT);
     T('점수 ' + g.score, W / 2, 186, 16, 'center', a);
     T(g.D.name + ' · ' + g.plane.name, W / 2, 208, 10, 'center', a * 0.85);
@@ -480,9 +485,9 @@ document.addEventListener('visibilitychange', () => { if (document.hidden) { IN.
 window.addEventListener('blur', () => { if (inGame() && A.g.mode === 'play' && !A.auto && !menu) mainMenu(); });
 
 /* ---------- 시험용 연결 ---------- */
-window.render_game_to_text = () => JSON.stringify({ screen: A.scr, live: A.live, sel: A.sel, cfg, diff: DS.DIFFS[A.diff].id, plane: DS.PLANES[A.plane].id, paper: DS.PAPERS[DS.paperIdx].name, paused: !!menu, menu: menu ? { title: menu.title, items: menu.items.map(it => it.label), i: menu.i } : null, turning: A.turn > 0, muted: SFX.muted, hi: A.hi, game: A.g ? JSON.parse(A.g.text()) : null });
+window.render_game_to_text = () => JSON.stringify({ screen: A.scr, live: A.live, sel: A.sel, cfg, diff: DS.DIFFS[A.diff].id, plane: DS.PLANES[A.plane].id, paper: DS.PAPERS[DS.paperIdx].name, paused: !!menu, menu: menu ? { title: menu.title, items: menu.items.map(it => it.label), i: menu.i } : null, turning: A.turn > 0, muted: SFX.muted, ringing: SFX.ringing, petals: DHPETALS.on, hi: A.hi, game: A.g ? JSON.parse(A.g.text()) : null });
 window.advanceTime = ms => { A.manual = true; const n = Math.max(1, Math.round(ms / STEP)); for (let i = 0; i < n; i++) { if (A.scr === 'load') break; IN.frame(); step(); } if (A.scr !== 'load') draw(); return n; };
-window.__donghyuns = { A, get cfg() { return cfg; }, set cfg(c) { cfg = c; sortieCard(cfg); }, get menu() { return menu; }, parseSortie, sortie, go, snapshot, restore, loadFrom, readSlot, saveToSlot, mainMenu, menuKey, closeMenu, backToSetup, fit };
+window.__donghyuns = { A, get cfg() { return cfg; }, set cfg(c) { cfg = c; sortieCard(cfg); }, get menu() { return menu; }, parseSortie, sortie, go, snapshot, restore, loadFrom, readSlot, saveToSlot, mainMenu, menuKey, closeMenu, backToSetup, fit, fete, feteOff, get petals() { return DHPETALS; } };
 
 if (A.debug) { const d = $('#dbg'); if (d) d.hidden = false; }
 selectExample(); sortieCard(cfg); readyLabels(); renderSlotList(); fit();

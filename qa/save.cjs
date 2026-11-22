@@ -26,7 +26,7 @@ function drive(g, n) {
   }
 }
 let fails = 0, checks = 0, modes = {}, sawBoss = 0, sawTimer = 0, sawPart = 0, sawBomb = 0, sawBeam = 0, sawWing = 0, sawHome = 0, sawStick = 0, sawGhost = 0;
-for (let plane = 0; plane < DS.PLANES.length; plane++) for (let diff = 0; diff < 3; diff++) for (let stage = 0; stage < 5; stage++) {
+for (let plane = 0; plane < DS.PLANES.length; plane++) for (let diff = 0; diff < 3; diff++) for (let stage = 0; stage < DS.STAGES.length; stage++) {
   const g = new DS.Game({ plane, diff, stage, lives: 9, bombs: 5, power: (plane + stage) % 4 });
   for (let seg = 0; seg < 14; seg++) {
     if (drive(g, 331 + seg * 53) === 'end') break;

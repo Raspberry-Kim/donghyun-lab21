@@ -55,6 +55,9 @@
     else if (k === 'bul') this.bullet(e.x + op[1], e.y + op[2], op[3], op[4], op[5]);
     else if (k === 'torp') { const o = { reaim: op[2], sp2: op[3] }; this.bullet(e.x - 5, e.y + op[1], PI, 0.9, 'n', o); this.bullet(e.x + 5, e.y + op[1], 0, 0.9, 'n', o); }
     else if (k === 'fire') { if (e.fires && e.fires[op[1]]) this.fire(e, e.fires[op[1]].f); }
+    else if (k === 'ring') DS.PAT.ring(this, e.x + op[1], e.y + op[2], op[3], op[4], op[5], op[6], op[7] ? { w: op[7], wt: op[8] } : null);
+    else if (k === 'fan') DS.PAT.fan(this, e.x + op[1], e.y + op[2], op[3], op[4], op[5], op[6], op[7]);
+    else if (k === 'spawn') { if (this.enemies.length < 48) this.spawnE(op[1], e.x + op[2], e.y + op[3], op[4]).brood = e.id; }      // 보스가 내보내는 작은 적
   };
 
   G.bullet = function (x, y, a, sp, bt, o) {
@@ -62,6 +65,7 @@
     sp = sp * this.D.bs * this.sk;
     const b = { x: x, y: y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, bt: bt || 's', r: bt === 'l' ? 4.2 : bt === 'n' ? 2.2 : 2.7, a: a, t: 0 };
     if (o && o.reaim) { b.reaim = o.reaim; b.sp2 = o.sp2 * this.D.bs * this.sk; }
+    if (o && o.w) { b.w = o.w; b.wt = o.wt || 60; }      // 휘는 탄: wt걸음 동안 걸음마다 w만큼 방향을 튼다
     this.bullets.push(b);
   };
 
@@ -218,30 +222,30 @@
     const p = this.pl, x = p.x, y = p.y - 10, L = p.power, V = 8.6, id = this.plane.id;
     const ang = (a, d, s, ox, oy) => this.shot(x + (ox || 0), y + (oy || 0), Math.sin(a) * V, -Math.cos(a) * V, d, s || 'ps_a');
     if (id === 'p38') {
-      if (L < 2) { ang(0, 1, 'ps_a', -3.6); ang(0, 1, 'ps_a', 3.6); } else { this.shot(x - 3.4, y, 0, -V, 1.6, 'ps_w', { hw: 5 }); this.shot(x + 3.4, y, 0, -V, 1.6, 'ps_w', { hw: 5 }); }
-      if (L >= 1) { ang(0, 1, 'ps_a', -10, 5); ang(0, 1, 'ps_a', 10, 5); }
-      if (L >= 3) { ang(-0.07, 1, 'ps_a', -15, 8); ang(0.07, 1, 'ps_a', 15, 8); }
+      if (L < 2) { ang(0, 0.85, 'ps_a', -3.6); ang(0, 0.85, 'ps_a', 3.6); } else { this.shot(x - 3.4, y, 0, -V, 1.35, 'ps_w', { hw: 5 }); this.shot(x + 3.4, y, 0, -V, 1.35, 'ps_w', { hw: 5 }); }
+      if (L >= 1) { ang(0, 0.85, 'ps_a', -10, 5); ang(0, 0.85, 'ps_a', 10, 5); }
+      if (L >= 3) { ang(-0.07, 0.5, 'ps_a', -15, 8); ang(0.07, 0.5, 'ps_a', 15, 8); }
       if (L >= 1 && p.subCd <= 0) {
         p.subCd = L >= 2 ? 34 : 44;
         const n = L >= 3 ? 2 : 1;
-        for (let i = 0; i < n; i++) [-1, 1].forEach(s => this.shot(x + s * 8, y + 8, s * (1.6 + i), -1.2, 3.2, 'ps_m', { kind: 'hm', sp: 2.4, hw: 3 }));
+        for (let i = 0; i < n; i++) [-1, 1].forEach(s => this.shot(x + s * 8, y + 8, s * (1.6 + i), -1.2, i ? 2 : 2.7, 'ps_m', { kind: 'hm', sp: 2.4, hw: 3 }));
       }
     } else if (id === 'hayate') {
       const n = 2 + L;
       for (let i = 0; i < n; i++) { const k = i - (n - 1) / 2; ang(0, 1.15, 'ps_a', k * 3.3, Math.abs(k) * 1.6); }
       if (L >= 1 && p.subCd <= 0) { p.subCd = 36; [-1, 1].forEach(s => this.shot(x + s * 9, y + 8, 0, -2, 3.4 + L * 0.9, 'ps_m', { kind: 'ms', hw: 3 })); }
     } else if (id === 'shinden') {      // 기수의 기총 넷: 가장 좁게 모아 쏜다
-      if (L < 2) { ang(0, 1.05, 'ps_a', -1.9); ang(0, 1.05, 'ps_a', 1.9); } else { this.shot(x - 2.3, y, 0, -V, 1.45, 'ps_w', { hw: 5 }); this.shot(x + 2.3, y, 0, -V, 1.45, 'ps_w', { hw: 5 }); }
-      if (L >= 1) { const d = L >= 2 ? 0.9 : 0.75; ang(0, d, 'ps_a', -6.2, 4); ang(0, d, 'ps_a', 6.2, 4); }
-      if (L >= 3) { ang(0, 0.75, 'ps_a', -9.8, 8); ang(0, 0.75, 'ps_a', 9.8, 8); }
+      if (L < 2) { ang(0, 1.2, 'ps_a', -1.9); ang(0, 1.2, 'ps_a', 1.9); } else { this.shot(x - 2.3, y, 0, -V, 1.65, 'ps_w', { hw: 5 }); this.shot(x + 2.3, y, 0, -V, 1.65, 'ps_w', { hw: 5 }); }
+      if (L >= 1) { const d = L >= 2 ? 1.04 : 0.86; ang(0, d, 'ps_a', -6.2, 4); ang(0, d, 'ps_a', 6.2, 4); }
+      if (L >= 3) { ang(0, 0.86, 'ps_a', -9.8, 8); ang(0, 0.86, 'ps_a', 9.8, 8); }
       if (L >= 1 && p.subCd <= 0) {      // 달라붙는 탄: 맞은 적에 붙어 한동안 피해를 준다
         p.subCd = 48;
-        (L >= 3 ? [-7, 7] : [p.subSide = -(p.subSide || 1)].map(s => s * 7)).forEach(ox => this.shot(x + ox, y + 8, 0, -2.6, 1, 'ps_h', { kind: 'st', hw: 3, hh: 5, tick: L >= 2 ? 0.75 : 0.6 }));
+        (L >= 3 ? [-7, 7] : [p.subSide = -(p.subSide || 1)].map(s => s * 7)).forEach(ox => this.shot(x + ox, y + 8, 0, -2.6, 1.15, 'ps_h', { kind: 'st', hw: 3, hh: 5, tick: L >= 2 ? 0.86 : 0.7 }));
       }
     } else {
       const fan = L >= 3 ? [0, 0.13, -0.13, 0.27, -0.27, 0.42, -0.42] : L >= 2 ? [0, 0.14, -0.14, 0.3, -0.3] : [0, 0.16, -0.16];
-      fan.forEach(a => ang(a, 0.95));
-      if (L >= 1) { ang(0, 0.95, 'ps_a', -4, 2); ang(0, 0.95, 'ps_a', 4, 2); }
+      fan.forEach(a => ang(a, 0.8));
+      if (L >= 1) { ang(0, 0.8, 'ps_a', -4, 2); ang(0, 0.8, 'ps_a', 4, 2); }
     }
     this.sfx('shot');
   };
@@ -251,15 +255,15 @@
     this.sfx('charge');
     if (id === 'p38') {
       const n = [4, 7, 10][lv - 1];
-      for (let i = 0; i < n; i++) { const a = (i / (n - 1) - 0.5) * (0.5 + lv * 0.22); this.shot(p.x + a * 16, p.y - 6, Math.sin(a) * 2.2, -Math.cos(a) * 2.2, 13, 'ps_r', { kind: 'rk', hw: 5, hh: 10, acc: 1.07 }); }
+      for (let i = 0; i < n; i++) { const a = (i / (n - 1) - 0.5) * (0.5 + lv * 0.22); this.shot(p.x + a * 16, p.y - 6, Math.sin(a) * 2.2, -Math.cos(a) * 2.2, 11, 'ps_r', { kind: 'rk', hw: 5, hh: 10, acc: 1.07 }); }
     } else if (id === 'hayate') {
       this.beam = { t: 0, life: [34, 58, 88][lv - 1], hw: [8, 10, 12][lv - 1], lv: lv };
     } else if (id === 'shinden') {      // 큰 밑그림 한 장이 앞으로 나아가며 지나는 적을 긋는다
       const k = lv - 1;
-      this.shot(p.x, p.y - 8, 0, -1.2, [3.2, 4.2, 5.2][k], 'shin_g', { kind: 'gh', lv: lv, sc: [0.7, 0.95, 1.3][k], hw: [18, 25, 34][k], hh: [16, 22, 30][k], rot: 0 });
+      this.shot(p.x, p.y - 8, 0, -1.2, [3.8, 5, 6.2][k], 'shin_g', { kind: 'gh', lv: lv, sc: [0.7, 0.95, 1.3][k], hw: [18, 25, 34][k], hh: [16, 22, 30][k], rot: 0 });
     } else {
       const n = lv + 1;
-      for (let i = 0; i < n; i++) this.shot(p.x, p.y, 0, 0, 4, 'disc', { kind: 'disc', ang: i / n * 2 * PI, rad: 8, life: [70, 96, 124][lv - 1], hw: 11, hh: 11 });
+      for (let i = 0; i < n; i++) this.shot(p.x, p.y, 0, 0, 3.4, 'disc', { kind: 'disc', ang: i / n * 2 * PI, rad: 8, life: [70, 96, 124][lv - 1], hw: 11, hh: 11 });
     }
   };
 
@@ -289,7 +293,7 @@
     this.bombT--; const t = 150 - this.bombT, k = this.bombK;
     if (k === 'pancake') {
       this.bx = p.x; this.by = p.y; const R = Math.min(170, 20 + t * 2.2); this.bombR = R;
-      this.enemies.forEach(e => { if (!e.dead && Math.hypot(e.x - this.bx, e.y - this.by) < R + 20 && e.y > -30) this.hurt(e, 1.5, e.x, e.y); });
+      this.enemies.forEach(e => { if (!e.dead && Math.hypot(e.x - this.bx, e.y - this.by) < R + 20 && e.y > -30) this.hurt(e, 1.3, e.x, e.y); });
       for (let i = this.bullets.length - 1; i >= 0; i--) { const q = this.bullets[i]; if (Math.hypot(q.x - this.bx, q.y - this.by) < R) { this.fx.push({ k: 'hit', x: q.x, y: q.y, t: 0, n: 2, rate: 4 }); this.bullets.splice(i, 1); } }
     } else if (k === 'hayate') {
       this.wings.forEach((w, i) => {
@@ -301,7 +305,7 @@
       const d = 22 + 66 * (0.5 - 0.5 * Math.cos(t * 0.09)), top = p.y - 10;
       this.wings = [0, -d, d].map(o => ({ x: Math.max(8, Math.min(W - 8, p.x + o)), y: top }));
       const hitX = x0 => this.wings.some(w => Math.abs(x0 - w.x) < 15);
-      this.enemies.forEach(e => { if (!e.dead && e.y > -20 && this.wings.some(w => this.hitBox(e, w.x - 13, 0, w.x + 13, top))) this.hurt(e, 1.8, e.x, Math.min(top, e.y + 8)); });
+      this.enemies.forEach(e => { if (!e.dead && e.y > -20 && this.wings.some(w => this.hitBox(e, w.x - 13, 0, w.x + 13, top))) this.hurt(e, 2.05, e.x, Math.min(top, e.y + 8)); });
       for (let i = this.bullets.length - 1; i >= 0; i--) { const q = this.bullets[i]; if (q.y < top + 6 && hitX(q.x)) { this.fx.push({ k: 'hit', x: q.x, y: q.y, t: 0, n: 2, rate: 4 }); this.bullets.splice(i, 1); } }
       if (t % 14 === 1) this.shake = Math.max(this.shake, 3);
       if (this.bombT <= 0) this.wings = [];
@@ -311,7 +315,7 @@
         if (y > -10) for (let i = 0; i < 5; i++) {
           const x = 24 + i * 48 + (this.rng() - 0.5) * 20, yy = y + (this.rng() - 0.5) * 12;
           this.boom(x, yy, 'm');
-          this.enemies.forEach(e => { if (!e.dead && this.hitBox(e, x - 28, yy - 24, x + 28, yy + 24)) this.hurt(e, 16, x, yy); });
+          this.enemies.forEach(e => { if (!e.dead && this.hitBox(e, x - 28, yy - 24, x + 28, yy + 24)) this.hurt(e, 13.5, x, yy); });
         }
         for (let i = this.bullets.length - 1; i >= 0; i--) if (this.bullets[i].y > y - 30) this.bullets.splice(i, 1);
         this.shake = 4; this.sfx('boom');
@@ -376,7 +380,7 @@
           const edge = e.y + b[1] + b[3] + s.hh; let touch = false;
           if (s.kind !== 'rk' && s.vy < -1 && s.y < edge && s.y - s.vy >= edge - 1) { const k = (edge - s.y) / -s.vy; s.x -= s.vx * k; s.y = edge; touch = true; }
           this.hurt(e, s.dmg, s.x, touch ? s.y - s.hh : s.y - 4);
-          if (s.kind === 'rk') { this.boom(s.x, s.y - 6, 'm'); E.forEach(q => { if (q !== e && !q.dead && this.hitBox(q, s.x - 22, s.y - 26, s.x + 22, s.y + 16)) this.hurt(q, 6, q.x, q.y); }); }
+          if (s.kind === 'rk') { this.boom(s.x, s.y - 6, 'm'); E.forEach(q => { if (q !== e && !q.dead && this.hitBox(q, s.x - 22, s.y - 26, s.x + 22, s.y + 16)) this.hurt(q, 5, q.x, q.y); }); }
           if (s.kind === 'st' && !e.dead && !e.dying) { s.stuck = 66; s.tg = e; s.ox = s.x - e.x; s.oy = Math.min(s.y - s.hh + 2, e.y + b[1] + b[3] - 1) - e.y; s.vx = s.vy = 0; s.x = e.x + s.ox; s.y = e.y + s.oy; }
           else if (touch) s.hit = 1; else S.splice(i, 1);
           break;
@@ -398,8 +402,8 @@
 
   G.kill = function (e, silent) {
     if (e.boss) {
-      e.dying = e.mid ? 70 : 150; this.clearBullets(); this.sfx('bossdie');
-      this.enemies.forEach(q => { if (q.parent === e && !q.dead) this.kill(q, true); });
+      e.dying = e.mid ? 70 : e.bd.last ? 270 : 150; this.clearBullets(); this.sfx('bossdie');
+      this.enemies.forEach(q => { if ((q.parent === e || q.brood === e.id) && !q.dead) this.kill(q, true); });      // 포탑과, 보스가 내보낸 작은 적도 함께
       return;
     }
     e.dead = true;
@@ -410,6 +414,8 @@
       if (e.drop) this.item(e.drop, e.x, e.y);
       this.sfx(e.def.boom === 's' ? 'boom_s' : 'boom');
       if (e.def.boom !== 's') this.shake = Math.max(this.shake, 5);
+      const bu = e.def.burst, p = this.pl;      // 기뢰: 터지면서 탄 고리를 남긴다 (폭탄을 쓰는 동안과 코앞에서는 남기지 않는다)
+      if (bu && this.bombT <= 0 && p.dead <= 0 && e.y > 6 && e.y < H * 0.74 && Math.hypot(p.x - e.x, p.y - e.y) > 44) DS.PAT.ring(this, e.x, e.y, bu.n, bu.sp, bu.bt, this.rng() * 6);
     }
   };
   G.item = function (k, x, y) { this.items.push({ k: k, x: x, y: y, vx: k === 'M' ? 0 : (this.rng() < 0.5 ? -0.5 : 0.5), vy: k === 'M' ? -1.2 : -0.8, t: 0 }); };
@@ -456,6 +462,7 @@
     if (f.k === 'aim') P.aim(this, x, y, f.n, f.spr || 0, f.sp, f.bt);
     else if (f.k === 'fan') P.fan(this, x, y, PI / 2, f.n, f.spr, f.sp, f.bt);
     else if (f.k === 'ring') P.ring(this, x, y, f.n, f.sp, f.bt, this.rng() * 6);
+    else if (f.k === 'spiral') P.ring(this, x, y, f.n, f.sp, f.bt, (e.sa = (e.sa || 0) + f.da));      // 쏠 때마다 조금씩 돌아가는 고리
     this.sfx('eshot');
   };
 
@@ -463,7 +470,7 @@
     const d = e.bd;
     if (e.dying > 0) {
       e.dying--;
-      if (e.dying % 7 === 0) { const b = e.boxes[(this.rng() * e.boxes.length) | 0]; this.boom(e.x + b[0] + (this.rng() * 2 - 1) * b[2], e.y + b[1] + (this.rng() * 2 - 1) * b[3], this.rng() < 0.4 ? 'l' : 'm'); this.shake = 6; this.sfx('boom'); }
+      if (e.dying % (d.last ? 5 : 7) === 0) { const b = e.boxes[(this.rng() * e.boxes.length) | 0]; this.boom(e.x + b[0] + (this.rng() * 2 - 1) * b[2], e.y + b[1] + (this.rng() * 2 - 1) * b[3], this.rng() < 0.4 ? 'l' : 'm'); this.shake = 6; this.sfx('boom'); }
       e.y += e.ground ? 0 : 0.25;
       if (e.dying === 0) this.bossDead(e, true);
       return;
@@ -515,6 +522,7 @@
     for (let i = B.length - 1; i >= 0; i--) {
       const b = B[i]; b.t++;
       if (b.reaim && b.t === b.reaim) { const a = Math.atan2(p.y - b.y, p.x - b.x); b.vx = Math.cos(a) * b.sp2; b.vy = Math.sin(a) * b.sp2; b.a = a; }
+      if (b.w && b.t <= b.wt) { const c = Math.cos(b.w), s = Math.sin(b.w), vx = b.vx * c - b.vy * s; b.vy = b.vx * s + b.vy * c; b.vx = vx; }
       b.x += b.vx; b.y += b.vy;
       if (b.y > H + 10 || b.y < -14 || b.x < -10 || b.x > W + 10) { B.splice(i, 1); continue; }
       if (p.dead <= 0 && p.inv <= 0 && p.ctrl) { const dx = b.x - p.x, dy = b.y - p.y, r = b.r * 0.62 + 1.7; if (dx * dx + dy * dy < r * r) { B.splice(i, 1); this.die(); if (!this.god) break; } }

@@ -90,7 +90,7 @@ const PW = require(process.env.PLAYWRIGHT || '/home/user/node_modules/playwright
   // 규약 오류
   await p.evaluate(() => window.__donghyuns.backToSetup()); await adv(200);
   const P = t => p.evaluate(x => { const r = window.__donghyuns.parseSortie(x); return [r.go, r.err[0] || '', r.c]; }, t);
-  for (const [t, go] of [['3', true], ['9 5 5 2', true], ['0', false], ['10', false], ['3 6', false], ['3 2 6', false], ['3 2 1 3', false], ['3 2 1 1 1', false], ['', false], ['3 -1', false], ['1 0', true]]) { const r = await P(t); ok(r[0] === go, '규약 "' + t + '" → ' + (r[0] ? '출전' : '거부') + (r[1] ? ' (' + r[1] + ')' : '')); }
+  for (const [t, go] of [['3', true], ['9 5 5 2', true], ['0', false], ['10', false], ['3 6', false], ['3 2 6', true], ['9 5 7 2', true], ['3 2 8', false], ['3 2 1 3', false], ['3 2 1 1 1', false], ['', false], ['3 -1', false], ['1 0', true]]) { const r = await P(t); ok(r[0] === go, '규약 "' + t + '" → ' + (r[0] ? '출전' : '거부') + (r[1] ? ' (' + r[1] + ')' : '')); }
   await p.fill('#code', '나는 동현이냐?\n동현이구나'); await p.click('#run'); ok(/정수가 하나도/.test(await p.textContent('#result')), '정수 없음 → 출전하지 않는다');
   s = await st(); ok(s.screen === 'ready', '오류 뒤에도 출전 준비');
   console.log(out.join('\n')); console.log(fail ? fail + ' FAILED' : 'all ok'); console.log(errs.length ? errs.slice(0, 8).join('\n') : 'no errors');
