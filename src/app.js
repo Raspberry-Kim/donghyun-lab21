@@ -117,7 +117,7 @@ function sortie() {
 }
 
 /* ---------- 준비: 그림을 조금씩 미리 그려 둔다 ---------- */
-const WARM = ['p38', 'hayate', 'pancake', 'shinden', 'eb_s', 'eb_l', 'eb_n', 'ps_a', 'ps_w', 'ps_m', 'ps_r', 'ps_h', 'disc', 'beam', 'shin_g', 'wing', 'ring', 'swirl', 'bolt', 'it_p', 'it_b', 'it_m', 'ic_bomb', 'hit', 'scorch', 'prop', 'prop6', 'rotor', 'cloud0', 'cloud1', 'cloud2'];
+const WARM = ['p38', 'hayate', 'pancake', 'shinden', 'eb_s', 'eb_l', 'eb_n', 'ps_a', 'ps_w', 'ps_m', 'ps_r', 'ps_h', 'disc', 'beam', 'shin_g', 'wing', 'ring', 'swirl', 'bolt', 'it_p', 'it_b', 'it_m', 'ic_bomb', 'hit', 'scorch', 'prop', 'prop_s', 'prop6', 'rotor', 'cloud0', 'cloud1', 'cloud2'];
 ['s', 'm', 'l'].forEach(k => { for (let i = 0; i < DS.BOOM[k]; i++) WARM.push('boom_' + k + i); });
 function warm(then) {
   const t0 = performance.now();

@@ -21,7 +21,7 @@
     Object.keys(need).forEach(n => ART.get(n));
   };
   R.warm = function () {
-    ['p38', 'hayate', 'pancake', 'shinden', 'eb_s', 'eb_l', 'eb_n', 'ps_a', 'ps_w', 'ps_m', 'ps_r', 'ps_h', 'disc', 'beam', 'shin_g', 'wing', 'ring', 'swirl', 'bolt', 'it_p', 'it_b', 'it_m', 'ic_bomb', 'hit', 'scorch', 'prop', 'prop6', 'rotor', 'cloud0', 'cloud1', 'cloud2'].forEach(n => ART.get(n));
+    ['p38', 'hayate', 'pancake', 'shinden', 'eb_s', 'eb_l', 'eb_n', 'ps_a', 'ps_w', 'ps_m', 'ps_r', 'ps_h', 'disc', 'beam', 'shin_g', 'wing', 'ring', 'swirl', 'bolt', 'it_p', 'it_b', 'it_m', 'ic_bomb', 'hit', 'scorch', 'prop', 'prop_s', 'prop6', 'rotor', 'cloud0', 'cloud1', 'cloud2'].forEach(n => ART.get(n));
     ['s', 'm', 'l'].forEach(k => { for (let i = 0; i < DS.BOOM[k]; i++) ART.get('boom_' + k + i); });
   };
 
@@ -39,7 +39,7 @@
     const pr = s.o.props; if (!pr) return;
     const c = this.c, fy = s.o.flipY ? -1 : 1, cr = Math.cos(rot || 0), sr = Math.sin(rot || 0);
     for (let i = 0; i < pr.length; i++) {
-      const q = pr[i], px = q[0] * (sx || 1), py = q[1] * fy, ps = ART.get(q[3] === 6 ? 'prop6' : q[3] ? 'rotor' : 'prop'), f = ps.frames[((t >> 1) + i) % ps.frames.length], r = q[2] * S;
+      const q = pr[i], px = q[0] * (sx || 1), py = q[1] * fy, ps = ART.get(typeof q[3] === 'string' ? q[3] : q[3] === 6 ? 'prop6' : q[3] ? 'rotor' : 'prop'), f = ps.frames[((t >> 1) + i) % ps.frames.length], r = q[2] * S;
       const wx = x + px * cr - py * sr, wy = y + px * sr + py * cr;
       c.drawImage(f, Math.round(wx * S - r), Math.round(wy * S - r), r * 2, r * 2);
     }

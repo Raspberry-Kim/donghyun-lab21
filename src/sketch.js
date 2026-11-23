@@ -173,8 +173,10 @@
     this.gc = mk(w * this.sc, h * this.sc); this.g = this.gc.getContext('2d');
     this.fc = o.noFill ? null : mk(w * this.sc, h * this.sc); this.f = this.fc ? this.fc.getContext('2d') : null;
     const ox = o.origin ? o.origin[0] : w / 2, oy = o.origin ? o.origin[1] : h / 2;
-    this.g.setTransform(this.sc, 0, 0, this.sc, ox * this.sc, oy * this.sc);
-    if (this.f) this.f.setTransform(this.sc, 0, 0, this.sc, ox * this.sc, oy * this.sc);
+    this.zoom = o.zoom || 1;                // 그림 배율: 모양만 줄이거나 키우고 선 굵기는 그대로 둔다
+    const z = this.sc * this.zoom;
+    this.g.setTransform(z, 0, 0, z, ox * this.sc, oy * this.sc);
+    if (this.f) this.f.setTransform(z, 0, 0, z, ox * this.sc, oy * this.sc);
     this.g.lineCap = 'round'; this.g.lineJoin = 'round';
     this.ink = o.ink || DS.INK; this.g.strokeStyle = this.ink; this.g.fillStyle = this.ink;
     this.k = o.k == null ? 1 : o.k;         // 전체 진하기
@@ -206,7 +208,7 @@
   P._stroke = function (d, o, closed) {
     const g = this.g, r = this.rng, n = d.length;
     if (n < 2) return;
-    const w = (o.w || 0.5) * this.bold, a = Math.min(1, (o.a == null ? 1 : o.a) * 1.12) * this.k, jit = (o.jit == null ? 0.28 : o.jit) * this.jit, passes = o.passes || 2;
+    const w = (o.w || 0.5) * this.bold / this.zoom, a = Math.min(1, (o.a == null ? 1 : o.a) * 1.12) * this.k, jit = (o.jit == null ? 0.28 : o.jit) * this.jit, passes = o.passes || 2;
     for (let p = 0; p < passes; p++) {
       const ph1 = r() * 50, ph2 = r() * 50, ph3 = r() * 50, f1 = 0.12 + r() * 0.1, f2 = 0.33 + r() * 0.2, J = [];
       for (let i = 0; i < n; i++) {
@@ -240,7 +242,7 @@
     let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
     for (const q of d) { if (q[0] < x0) x0 = q[0]; if (q[0] > x1) x1 = q[0]; if (q[1] < y0) y0 = q[1]; if (q[1] > y1) y1 = q[1]; }
     const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2, R = Math.hypot(x1 - x0, y1 - y0) / 2 + 1;
-    const ang = h.ang == null ? -0.9 : h.ang, gap = h.gap || 1.5, a = (h.a == null ? 0.5 : h.a) * this.k, w = (h.w || 0.3) * (0.5 + 0.5 * this.bold);
+    const ang = h.ang == null ? -0.9 : h.ang, gap = h.gap || 1.5, a = (h.a == null ? 0.5 : h.a) * this.k, w = (h.w || 0.3) * (0.5 + 0.5 * this.bold) / this.zoom;
     g.save(); this._path(g, d, true); g.clip();
     if (h.side) {
       g.beginPath(); const bw = x1 - x0, bh = y1 - y0, f = h.f == null ? 0.5 : h.f;

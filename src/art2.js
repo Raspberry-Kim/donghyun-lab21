@@ -282,10 +282,12 @@
   }, { noFill: true, boil: 1 });
 
   /* 프로펠러·회전날개 (돌아가는 모습 석 장) */
-  def('prop', 22, 22, (p, i) => {
+  const prop3 = (p, i) => {
     p.ell(0, 0, 9.4, 9.4, { paper: false, w: 0.3, a: 0.35, passes: 1, jit: 0.2 });
     for (let k = 0; k < 3; k++) { const a = i * 0.7 + k * 2.094; p.poly([[0, 0], [Math.cos(a - 0.22) * 9, Math.sin(a - 0.22) * 9], [Math.cos(a + 0.22) * 9, Math.sin(a + 0.22) * 9]], { paper: false, tone: 0.2, line: false }); }
-  }, { noFill: true, boil: 3, grain: 0.35 });
+  };
+  def('prop', 22, 22, prop3, { noFill: true, boil: 3, grain: 0.35 });
+  def('prop_s', 22, 22, prop3, { noFill: true, boil: 3, grain: 0.35, zoom: 0.855 });      // 팬케이크: 같은 칸에 작게 그려 선 굵기를 지킨다
   def('prop6', 22, 22, (p, i) => {      // 신덴의 여섯 날 프로펠러
     p.ell(0, 0, 9.4, 9.4, { paper: false, w: 0.3, a: 0.35, passes: 1, jit: 0.2 });
     for (let k = 0; k < 6; k++) { const a = i * 0.35 + k * 1.0472; p.poly([[0, 0], [Math.cos(a - 0.15) * 9, Math.sin(a - 0.15) * 9], [Math.cos(a + 0.15) * 9, Math.sin(a + 0.15) * 9]], { paper: false, tone: 0.2, line: false }); }
