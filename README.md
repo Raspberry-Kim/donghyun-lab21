@@ -1,4 +1,4 @@
-# 동현스 v0.42
+# 동현스 v0.43
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24435598.svg)](https://doi.org/10.5281/zenodo.24435598)
 
@@ -7,7 +7,7 @@
 
 바로 하기: https://raspberry-kim.github.io/donghyun-lab21/
 
-모든 판을 묶는 DOI는 [`10.5281/zenodo.24435598`](https://doi.org/10.5281/zenodo.24435598)이다. 이번 판은 [v0.42 릴리스](https://github.com/Raspberry-Kim/donghyun-lab21/releases/tag/v0.42)이다. 판마다의 Zenodo 보관본은 위 DOI 쪽의 판 목록에서 고른다.
+모든 판을 묶는 DOI는 [`10.5281/zenodo.24435598`](https://doi.org/10.5281/zenodo.24435598)이다. 이번 판은 [v0.43 릴리스](https://github.com/Raspberry-Kim/donghyun-lab21/releases/tag/v0.43)이다. 판마다의 Zenodo 보관본은 위 DOI 쪽의 판 목록에서 고른다.
 
 ## 규칙
 
@@ -100,7 +100,7 @@
 
 - 배경 음악은 없다. 효과음과, 끝판왕을 이겼을 때의 짧은 승리 팡파르가 있다.
 - 2인용, 스테이지 순서 섞기, 2주차는 없다.
-- 난이도는 사람이 오래 해 보며 맞춘 것이 아니라 수로 정하고 자동 조종으로 완주를 확인한 것이다.
+- 난이도는 수로 정하고 자동 조종으로 완주를 확인했다(실기기 미확인).
 
 ## 출처와 라이선스
 

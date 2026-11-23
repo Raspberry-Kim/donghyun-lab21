@@ -92,7 +92,9 @@
   }
   const GAP = { shot: 0.07, eshot: 0.12, boom_s: 0.05, boom: 0.06, medal: 0.04, item: 0.04 };
   DS.Sfx = {
-    unlock() { init(); if (ac && ac.state === 'suspended') ac.resume().catch(() => { }); },
+    /* 소리 장치가 돌고 있지 않으면 다시 켠다. Safari는 탭을 바꾸거나 통화가 끝난 뒤 'interrupted'로 남는다 */
+    unlock() { init(); this.wake(); },
+    wake() { if (!ac || ac.state === 'running' || ac.state === 'closed') return; try { const r = ac.resume(); if (r && r.catch) r.catch(() => { }); } catch (_) { } },
     play(n) {
       if (!ac || muted || ac.state !== 'running' || !D[n]) return;
       const t = ac.currentTime; if (t - (last[n] == null ? -9 : last[n]) < (GAP[n] || 0.02)) return; last[n] = t;
