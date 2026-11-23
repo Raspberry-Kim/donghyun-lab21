@@ -17,6 +17,9 @@ const A = DS.app = { render: R, input: IN,
 let tab = 'play', menu = null, last = 0, acc = 0;
 IN.active = () => A.live && tab === 'play';
 IN.onFirst = () => SFX.unlock();
+/* 누르거나 화면으로 돌아올 때마다 멈춘 소리 장치를 다시 켠다 */
+['pointerdown', 'keydown', 'touchend', 'click'].forEach(ev => addEventListener(ev, () => SFX.wake(), true));
+document.addEventListener('visibilitychange', () => { if (!document.hidden) SFX.wake(); }); addEventListener('pageshow', () => SFX.wake()); addEventListener('focus', () => SFX.wake());
 IN.bind($('#b-charge'), 'charge'); IN.bind($('#b-bomb'), 'bomb'); IN.bind($('#b-pause'), 'pause');
 
 /* ---------- 화면 전환·소리·탭 ---------- */
