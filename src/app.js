@@ -214,7 +214,8 @@ document.addEventListener('keydown', e => {          // 메뉴가 떠 있는 동
   const k = MENUKEY[e.code]; if (!k) return;
   e.preventDefault(); e.stopPropagation(); if (e.repeat && k !== 'up' && k !== 'down') return; menuKey(k);
 });
-GP.start({ hint: 'A 샷 · B 모아 쏘기 · X·Y·L 폭탄 · + 메뉴', status: t => status(t),
+/* 어깨 버튼: R=X키(샷) · L=Z키(모아 쏘기) · ZL·ZR=Shift키(폭탄). 네 버튼과 +, −, 십자, 왼 스틱은 시리즈 공통 그대로다 */
+GP.start({ hint: 'A·R 샷 · B·L 모아 쏘기 · X·Y·ZL·ZR 폭탄 · + 메뉴', buttons: { 4: 'z', 5: 'x', 6: 'shift', 7: 'shift' }, status: t => status(t),
   down(k) { if (menu) { if (tab === 'play') menuKey(k === 'x' || k === 'enter' ? 'ok' : k === 'z' ? 'back' : k); return; } IN.padDown(k); }, up(k) { IN.padUp(k); } });
 
 /* ---------- 저장·불러오기: 브라우저 칸 3개 + .dhsave 파일 ---------- */
