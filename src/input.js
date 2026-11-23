@@ -7,7 +7,7 @@
     KeyX: 'shot', Space: 'shot', KeyZ: 'charge', KeyC: 'bomb', ShiftLeft: 'bomb', ShiftRight: 'bomb',
     Enter: 'pause', NumpadEnter: 'pause', Escape: 'pause', KeyP: 'pause', KeyF: 'big'
   };
-  /* 게임패드는 gamepad.js가 키보드와 같은 이름으로 알려 준다: A=x(샷) · B=z(모아 쏘기) · X=s · Y=a · L=shift(폭탄) · +=enter(메뉴) */
+  /* 게임패드는 gamepad.js가 키보드와 같은 이름으로 알려 준다: A·R=x(샷) · B·L=z(모아 쏘기) · X=s · Y=a · ZL·ZR=shift(폭탄) · +=enter(메뉴) */
   const PADKEY = { x: 'shot', z: 'charge', s: 'bomb', a: 'bomb', shift: 'bomb', enter: 'pause', up: 'u', down: 'd', left: 'l', right: 'r' };
 
   function Input(cv) {

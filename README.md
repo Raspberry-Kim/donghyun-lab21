@@ -1,4 +1,4 @@
-# 동현스 v0.31
+# 동현스 v0.41
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24435598.svg)](https://doi.org/10.5281/zenodo.24435598)
 
@@ -7,7 +7,7 @@
 
 바로 하기: https://raspberry-kim.github.io/donghyun-lab21/
 
-모든 판을 묶는 DOI는 [`10.5281/zenodo.24435598`](https://doi.org/10.5281/zenodo.24435598)이다. 이번 판은 [v0.31 릴리스](https://github.com/Raspberry-Kim/donghyun-lab21/releases/tag/v0.31)이다. 판마다의 Zenodo 보관본은 위 DOI 쪽의 판 목록에서 고른다.
+모든 판을 묶는 DOI는 [`10.5281/zenodo.24435598`](https://doi.org/10.5281/zenodo.24435598)이다. 이번 판은 [v0.41 릴리스](https://github.com/Raspberry-Kim/donghyun-lab21/releases/tag/v0.41)이다. 판마다의 Zenodo 보관본은 위 DOI 쪽의 판 목록에서 고른다.
 
 ## 규칙
 
@@ -56,7 +56,7 @@
 
 - 키보드: ←→↑↓ 움직이기 · **X 또는 Space** 샷(누르고 있으면 계속 나간다) · **Z**를 누르고 있다가 떼면 모아 쏘기(0.5초 · 1.2초 · 2초에 한 단계씩, 세 단계) · C 또는 Shift 폭탄 · Enter·Esc·P 메뉴(계속 간다 · 소리 · 저장 · 불러오기 · 포기하고 출전 준비로) · M 효과음 · F 전체 화면.
 - 손가락: 화면을 누른 채 끌면 끈 만큼 기체가 움직이고 샷은 저절로 나간다. 둘째 손가락을 화면에 대고 있다가 떼거나, 화면 아래 **모아 쏘기** 버튼을 누르고 있다가 떼면 모아 쏘기다. **폭탄**·**메뉴** 버튼도 화면 아래에 있다. 마우스로도 같은 방식으로 끌 수 있다.
-- 게임패드(닌텐도 배치): A 샷 · B 모아 쏘기 · X·Y·L 폭탄 · 십자·왼 스틱 이동 · + 메뉴. A와 B가 거꾸로 들어오면 −(Select)로 바꾼다.
+- 게임패드(닌텐도 배치): A·R 샷 · B·L 모아 쏘기 · X·Y·ZL·ZR 폭탄 · 십자·왼 스틱 이동 · + 메뉴. A와 B가 거꾸로 들어오면 −(Select)로 바꾼다.
 - 출전한 뒤 판 아래 **전체 화면** 버튼(또는 F)을 누르면 게임 화면이 비율을 지키며 화면을 꽉 채운다. 전체 화면에서 Esc를 누르면 브라우저가 전체 화면을 닫고, 게임은 메뉴를 열어 멈춘다.
 - 게임 화면은 세로로 긴 240×320칸(3:4)이고 1초에 60걸음으로 움직인다.
 
@@ -93,8 +93,8 @@
 
 - `index.html` — 묶은 한 파일(글꼴 포함). `node build.cjs`로 `src/`에서 만든다.
 - `src/game.js` 엔진(기체·적·탄·보스·점수·저장) · `src/data.js` 기체·난이도·적·보스·스테이지 자료 · `src/sketch.js` 연필 선과 종이 · `src/art.js`·`art2.js`·`art3.js` 그림 · `src/terrain.js` 땅 · `src/render.js` 화면 · `src/input.js` 입력 · `src/app.js` 출전·메뉴·저장 · `src/examples.js` 예제 · `src/donghyun.js` 동현랭 실행기 v1.55 · `src/sfx.js` 효과음과 승리 팡파르 · `src/petals.js` 엔딩의 꽃비 · `src/gamepad.js` 게임패드 · `src/title.png` 시작 화면의 제목(제작자의 아내가 직접 쓴 글씨, 그림 파일은 이 한 장이다).
-- `qa/save.cjs` 엔진 저장·불러오기 왕복 · `qa/weap.cjs` 기체 넷의 샷·모아 쏘기·폭탄 · `qa/docs.cjs` 문서 예시와 판 번호 · `qa/fuzz.cjs` 마구 누르는 입력으로 일곱 스테이지를 돌며 멈춤·저장 왕복을 봄(node). `qa/hitbox.cjs` 맞는 범위와 그림이 어긋나지 않는지 · `qa/ui.cjs` 쪽 전체 흐름 · `qa/touch.cjs` 손가락 입력 · `qa/full.cjs` 전체 화면 · `qa/run.cjs` 일곱 스테이지 자동 완주 · `qa/victory.cjs` 엔딩의 팡파르와 꽃비 · `qa/tabs.cjs` 탭·휴대폰·어두운 화면 · `qa/perf.cjs` 속도(Playwright). `qa/launch.cjs`는 이 시험들이 브라우저를 띄울 때 함께 쓴다.
-- `tools/subset-font.py` — 게임 화면 손글씨(Gaegu)에서 쓰는 글자만 추린다. 게임 화면의 글을 고치면 다시 돌린다.
+- `qa/save.cjs` 엔진 저장·불러오기 왕복 · `qa/weap.cjs` 기체 넷의 샷·모아 쏘기·폭탄 · `qa/docs.cjs` 문서 예시와 판 번호 · `qa/fuzz.cjs` 마구 누르는 입력으로 일곱 스테이지를 돌며 멈춤·저장 왕복을 봄(node). `qa/hitbox.cjs` 맞는 범위와 그림이 어긋나지 않는지 · `qa/ui.cjs` 쪽 전체 흐름 · `qa/touch.cjs` 손가락 입력 · `qa/full.cjs` 전체 화면 · `qa/run.cjs` 일곱 스테이지 자동 완주 · `qa/victory.cjs` 엔딩의 팡파르와 꽃비 · `qa/tabs.cjs` 탭·휴대폰·어두운 화면 · `qa/pad.cjs` 게임패드 버튼 배정(흉내 낸 패드) · `qa/glyph.cjs` 게임 화면에 쓴 글자가 모두 손글씨로 나오는지 · `qa/screens.cjs` 여러 화면 크기와 배율 · `qa/perf.cjs` 속도(Playwright). `qa/launch.cjs`는 이 시험들이 브라우저를 띄울 때 함께 쓴다.
+- `tools/subset-font.py` — 게임 화면 손글씨(Gaegu)에서 쓰는 글자만 추린다. 게임 화면의 글을 고치면 다시 돌린다. 추린 글자는 `fonts/Gaegu.subset.txt`에 적힌다.
 
 ## 한계
 
